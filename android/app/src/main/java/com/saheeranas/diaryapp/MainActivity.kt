@@ -1,4 +1,4 @@
-package com.saheeranas.diaryapp
+package com.charlesinwald.mani
 
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate

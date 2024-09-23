@@ -1,7 +1,7 @@
 <!--
   Title: Private Diary App
   Description: A privacy focused diary/journal app
-  Author: saheeranas
+  Author: charlesinwald
   -->
 
 # Private Diary App
@@ -32,13 +32,13 @@ A privacy focused journal app. The Private Diary App is built for people who are
 Clone this repo
 
 ```
-git clone https://github.com/saheeranas/diaryapp.git
+git clone https://github.com/charlesinwald/mani.git
 ```
 
 Open project folder and install dependencies
 
 ```
-cd diaryapp
+cd mani
 yarn
 or
 npm i

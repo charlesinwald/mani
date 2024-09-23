@@ -43,7 +43,7 @@ let signInOptions = {
 };
 
 // Backup filename
-let fileName = 'PrivateDiaryApp.db';
+let fileName = 'Privatemani.db';
 let tempFileName = 'pdatmp.db';
 
 // Sync stages and dummy percentage values in points tp show progress bar

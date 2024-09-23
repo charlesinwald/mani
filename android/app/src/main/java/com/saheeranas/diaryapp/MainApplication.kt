@@ -1,4 +1,4 @@
-package com.saheeranas.diaryapp
+package com.charlesinwald.mani
 
 import android.app.Application
 import com.facebook.react.PackageList

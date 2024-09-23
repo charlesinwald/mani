@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "705736151328",
+    "project_id": "mani-app-a126b",
+    "storage_bucket": "mani-app-a126b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:705736151328:android:03948f655d766ffd6e0745",
+        "android_client_info": {
+          "package_name": "com.charlesinwald.mani"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "705736151328-eq6263i4kr041n2kj2u1ulkvjg3udabq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.charlesinwald.mani",
+            "certificate_hash": "51103c1d58635a3687fce5a9d816bcdaa27a82db"
+          }
+        },
+        {
+          "client_id": "705736151328-68gv888ikkebqh79aja0hrhbu00a5igl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAWUR_Opnyqbrkp4ENox2WFdxe0FgEo7fo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "705736151328-68gv888ikkebqh79aja0hrhbu00a5igl.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
