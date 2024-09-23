@@ -11,6 +11,7 @@ const DiaryEntry = types.model('DiaryEntry', {
   createdAt: types.number,
   // modifiedAt: UNIX timestamp
   modifiedAt: types.number,
+  mood: types.optional(types.string, ''),
 });
 
 export default DiaryEntry;

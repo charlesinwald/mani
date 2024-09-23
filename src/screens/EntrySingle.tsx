@@ -12,12 +12,15 @@ import 'react-native-get-random-values';
 import {v4 as uuidv4} from 'uuid';
 import dayjs from 'dayjs';
 
-import {Card, Button, Text} from '@ui-kitten/components';
+import {Card, Button, Text, Icon} from '@ui-kitten/components';
 
 import {MSTContext} from '../mst';
 
 import {EntrySingleProps} from '../navigation/types';
 import {Layout} from '../components/Layout';
+import SadIcon from '../svg/SadIcon';
+import HappyIcon from '../svg/HappyIcon';
+import NeutralIcon from '../svg/NeutralIcon';
 
 const initialText = '';
 
@@ -27,6 +30,7 @@ const EntrySingle: React.FC<EntrySingleProps> = observer(
     const [inputData, setInputData] = React.useState(initialText);
     const [active, setActive] = useState<any>(null);
     const [editable, setEditable] = useState(false);
+    const [selectedMood, setSelectedMood] = useState(''); // Track mood selection
 
     useEffect(() => {
       const unsubscribe = navigation.addListener('focus', () => {
@@ -37,10 +41,15 @@ const EntrySingle: React.FC<EntrySingleProps> = observer(
         } else {
           tempDate = dayjs(new Date()).format('YYYY-MM-DD');
         }
+
         const temp = store.findEntryByDate(tempDate);
         if (temp.length) {
           setActive(temp[0]);
           setInputData(temp[0].desc);
+
+          // If the mood is missing, assign a default mood
+          const mood = temp[0].mood || 'neutral'; // Default to 'neutral' if mood is missing
+          setSelectedMood(mood);
         } else {
           let newItem = {
             _id: uuidv4(),
@@ -48,6 +57,7 @@ const EntrySingle: React.FC<EntrySingleProps> = observer(
             desc: '',
             createdAt: dayjs(tempDate).valueOf(),
             modifiedAt: '',
+            mood: 'neutral', // Default mood for new entries
           };
           setActive(newItem);
         }
@@ -97,6 +107,7 @@ const EntrySingle: React.FC<EntrySingleProps> = observer(
             desc: inputData,
             createdAt: dayjs(new Date()).valueOf(),
             modifiedAt: dayjs(new Date()).valueOf(),
+            mood: selectedMood, // Add mood to the entry
           });
         } else {
           store.updateEntry({
@@ -106,6 +117,7 @@ const EntrySingle: React.FC<EntrySingleProps> = observer(
             createdAt: active.createdAt,
             desc: inputData,
             modifiedAt: dayjs(new Date()).valueOf(),
+            mood: selectedMood, // Update mood in the entry
           });
         }
       }
@@ -136,6 +148,40 @@ const EntrySingle: React.FC<EntrySingleProps> = observer(
                   </View>
                 </TouchableOpacity>
               )}
+
+              <View style={styles.moodWrapper}>
+                <Button
+                  style={[
+                    styles.moodButton,
+                    selectedMood === 'sad' && styles.selectedMood,
+                  ]}
+                  onPress={() => setSelectedMood('sad')}
+                  status="danger"
+                  accessoryLeft={props => <SadIcon {...props} fill="#FFFFFF" />}
+                />
+                <Button
+                  style={[
+                    styles.moodButton,
+                    selectedMood === 'neutral' && styles.selectedMood,
+                  ]}
+                  onPress={() => setSelectedMood('neutral')}
+                  status="warning"
+                  accessoryLeft={props => (
+                    <NeutralIcon {...props} fill="#FFFFFF" />
+                  )}
+                />
+                <Button
+                  style={[
+                    styles.moodButton,
+                    selectedMood === 'happy' && styles.selectedMood,
+                  ]}
+                  onPress={() => setSelectedMood('happy')}
+                  status="success"
+                  accessoryLeft={props => (
+                    <HappyIcon {...props} fill="#FFFFFF" />
+                  )}
+                />
+              </View>
 
               {active && active?.modifiedAt !== '' && (
                 <Text style={styles.statusText}>
@@ -211,6 +257,19 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   btnSave: {},
+  moodWrapper: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginVertical: 10,
+  },
+  moodButton: {
+    flex: 1,
+    marginHorizontal: 5,
+  },
+  selectedMood: {
+    borderWidth: 2,
+    borderColor: '#000',
+  },
   statusText: {
     fontSize: 11,
     marginBottom: 10,

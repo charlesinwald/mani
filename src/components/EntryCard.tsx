@@ -27,7 +27,7 @@ const EntryCard: React.FC<EntryCardProps> = ({desc, date, onPress}) => {
           {/* <Text style={styles.dayStr}>{dayStr}</Text> */}
           <Text style={styles.date}>{rest}</Text>
         </View>
-        <Text style={styles.desc}>{desc.substr(0, 50)}</Text>
+        <Text style={styles.desc}>{desc.substr(0, 20)}</Text>
       </View>
     </Pressable>
   );

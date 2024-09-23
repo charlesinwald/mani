@@ -7,6 +7,7 @@ class Entry extends Realm.Object {
   createdAt: number | undefined;
   modifiedAt: number | undefined;
   deleted: boolean = false;
+  mood: string = '';
 
   static schema: Realm.ObjectSchema = {
     name: 'Entry',
@@ -23,6 +24,7 @@ class Entry extends Realm.Object {
       modifiedAt: 'int',
       // deleted: Boolean
       deleted: {type: 'bool', default: false},
+      mood: 'string',
     },
     primaryKey: '_id',
   };
