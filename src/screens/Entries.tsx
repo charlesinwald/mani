@@ -15,6 +15,7 @@ import Search from '../components/Search';
 
 const Entries: React.FC<EntriesProps> = observer(({navigation}) => {
   const store = useContext(MSTContext);
+  console.log('store: ', JSON.stringify(store.entries));
   const [searchQuery, setSearchQuery] = useState('');
 
   const dummy = (status: boolean) => {
@@ -66,8 +67,8 @@ const Entries: React.FC<EntriesProps> = observer(({navigation}) => {
   //   // }
   // });
 
-  const navigateToDetail = (date = '') => {
-    navigation.navigate('EntrySingle', {date});
+  const navigateToDetail = (id: string) => {
+    navigation.navigate('EntrySingle', {id}); // Pass the `_id` instead of date
   };
 
   const filteredData = store.entries.filter(item =>
@@ -80,10 +81,10 @@ const Entries: React.FC<EntriesProps> = observer(({navigation}) => {
         {() => (
           <EntryCard
             key={`entrycard-${item._id}`}
-            // item={item}
             desc={item.desc}
             date={item.date}
-            onPress={() => navigateToDetail(item.date)}
+            onPress={() => navigateToDetail(item._id)} // Navigate using `_id`
+            mood={item.mood}
           />
         )}
       </Observer>

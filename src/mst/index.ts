@@ -37,7 +37,7 @@ const RootStore = types
       let itemsFromDB = readEntriesFromDB();
       let modifieddata = itemsFromDB
         .map((item: DiaryEntryDBType) => {
-          const {deleted, _id, date, desc, createdAt, modifiedAt} = item;
+          const {deleted, _id, date, desc, mood, createdAt, modifiedAt} = item;
           return deleted
             ? null
             : {
@@ -46,6 +46,7 @@ const RootStore = types
                 desc,
                 createdAt,
                 modifiedAt,
+                mood,
               };
         })
         .filter(Boolean);

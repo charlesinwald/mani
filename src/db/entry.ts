@@ -11,6 +11,12 @@ const readEntriesFromDB = (): DiaryEntryDBType[] => {
   return JSON.parse(JSON.stringify(entries));
 };
 
+// Store method to find entry by ID
+const findEntryById = (id: string): DiaryEntryDBType | null => {
+  const entry = realm.objectForPrimaryKey('Entry', id); // Use objectForPrimaryKey to get a single entry
+  return entry ? (JSON.parse(JSON.stringify(entry)) as DiaryEntryDBType) : null;
+};
+
 // Add
 const addEntryToDB = (item: DiaryEntryOut) => {
   const entries = realm.objects('Entry');
@@ -27,6 +33,7 @@ const addEntryToDB = (item: DiaryEntryOut) => {
       desc: item.desc,
       createdAt: item.createdAt,
       modifiedAt: item.modifiedAt,
+      mood: item.mood,
     });
   });
 };
@@ -41,12 +48,15 @@ const updateEntryToDB = (item: DiaryEntryDBType) => {
       // @ts-ignore
       res[0].desc = item.desc;
       // @ts-ignore
+      res[0].mood = item.mood;
+      // @ts-ignore
       res[0].modifiedAt = dayjs(new Date()).valueOf();
       // @ts-ignore
       res[0].deleted = false;
     });
   } else {
     realm.write(() => {
+      console.log('updateEntryToDB: ', item);
       // @ts-ignore
       realm.create('Entry', {
         ...item,
@@ -114,6 +124,8 @@ const importToDBFromJSON = (data: DataFromFile) => {
           // @ts-ignore
           itemFoundInDB.desc = obj.desc;
           // @ts-ignore
+          itemFoundInDB.mood = obj.mood;
+          // @ts-ignore
           itemFoundInDB.modifiedAt = obj.modifiedAt;
           // @ts-ignore
           itemFoundInDB.deleted = obj.deleted;
@@ -133,6 +145,7 @@ const importToDBFromJSON = (data: DataFromFile) => {
 
 export {
   readEntriesFromDB,
+  findEntryById,
   addEntryToDB,
   updateEntryToDB,
   softDeleteOneEntryFromDB,

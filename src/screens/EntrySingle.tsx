@@ -12,7 +12,7 @@ import 'react-native-get-random-values';
 import {v4 as uuidv4} from 'uuid';
 import dayjs from 'dayjs';
 
-import {Card, Button, Text, Icon} from '@ui-kitten/components';
+import {Card, Button, Text} from '@ui-kitten/components';
 
 import {MSTContext} from '../mst';
 
@@ -21,6 +21,7 @@ import {Layout} from '../components/Layout';
 import SadIcon from '../svg/SadIcon';
 import HappyIcon from '../svg/HappyIcon';
 import NeutralIcon from '../svg/NeutralIcon';
+import {findEntryById} from '../db/entry';
 
 const initialText = '';
 
@@ -34,34 +35,33 @@ const EntrySingle: React.FC<EntrySingleProps> = observer(
 
     useEffect(() => {
       const unsubscribe = navigation.addListener('focus', () => {
-        setInputData(initialText);
-        let tempDate;
-        if (route.params?.date && route.params?.date !== '') {
-          tempDate = dayjs(new Date(route.params.date)).format('YYYY-MM-DD');
-        } else {
-          tempDate = dayjs(new Date()).format('YYYY-MM-DD');
-        }
+        setInputData(initialText); // Reset the input data
+        const entryId = route.params?.id; // Get the entry ID from the route params
 
-        const temp = store.findEntryByDate(tempDate);
-        if (temp.length) {
-          setActive(temp[0]);
-          setInputData(temp[0].desc);
-
-          // If the mood is missing, assign a default mood
-          const mood = temp[0].mood || 'neutral'; // Default to 'neutral' if mood is missing
-          setSelectedMood(mood);
+        if (entryId) {
+          const temp = findEntryById(entryId); // Find the entry by `_id`
+          console.log('loading temp:', temp);
+          if (temp) {
+            setActive(temp); // Set the active entry
+            setInputData(temp.desc); // Set the description from the entry
+            const mood = temp.mood || 'neutral'; // Default to 'neutral' if no mood
+            setSelectedMood(mood);
+          }
         } else {
+          // Handle case where no entry is found (perhaps new entry scenario)
           let newItem = {
             _id: uuidv4(),
-            date: dayjs(tempDate).format('YYYY-MM-DD'),
+            date: dayjs(new Date()).format('YYYY-MM-DD'),
             desc: '',
-            createdAt: dayjs(tempDate).valueOf(),
+            createdAt: dayjs(new Date()).valueOf(),
             modifiedAt: '',
-            mood: 'neutral', // Default mood for new entries
+            mood: 'neutral', // Default mood
           };
           setActive(newItem);
         }
-        navigation.setParams({date: ''});
+
+        // Instead of resetting the whole params object, reset specific values or avoid resetting if not needed.
+        navigation.setParams({id: undefined}); // Safely reset the id param if needed
       });
 
       return unsubscribe;
@@ -99,6 +99,8 @@ const EntrySingle: React.FC<EntrySingleProps> = observer(
     };
 
     const addEntry = () => {
+      console.log('Saving entry:', active ? active._id : 'new entry');
+      console.log('saving Mood:', selectedMood);
       if (inputData.trim() !== '') {
         if (!active) {
           store.addEntry({
