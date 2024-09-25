@@ -201,19 +201,9 @@ const EntrySingle: React.FC<EntrySingleProps> = observer(
           <Card>
             <View>
               {address ? (
-                <Text>Location: {address}</Text>
-              ) : active?.latitude !== null &&
-                active?.longitude !== null &&
-                location?.latitude !== 0 &&
-                location?.longitude !== 0 &&
-                active?.latitude !== 0 &&
-                active?.longitude !== 0 ? (
-                <Text>
-                  Location: {active?.latitude.toFixed(2)},{' '}
-                  {active?.longitude.toFixed(2)}
-                </Text>
+                <Text>{address}</Text>
               ) : (
-                <Text>Location: Not available</Text> // Handle case where location is null or undefined
+                <Text>Location not available</Text> // Handle case where location is null or undefined
               )}
             </View>
 
@@ -277,15 +267,14 @@ const EntrySingle: React.FC<EntrySingleProps> = observer(
               )}
 
               <View style={styles.btnWrp}>
-                {editable && (
-                  <Button
-                    size="small"
-                    status="primary"
-                    style={[styles.btn, styles.btnSave]}
-                    onPress={addEntry}>
-                    Save
-                  </Button>
-                )}
+                <Button
+                  size="small"
+                  status="primary"
+                  style={[styles.btn, styles.btnSave]}
+                  onPress={addEntry}>
+                  Save
+                </Button>
+
                 <Button
                   size="small"
                   style={styles.btn}
