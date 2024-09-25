@@ -18,7 +18,7 @@ const findEntryById = (id: string): DiaryEntryDBType | null => {
 };
 
 // Add
-const addEntryToDB = (item: DiaryEntryOut) => {
+const addEntryToDB = async (item: DiaryEntryOut) => {
   const entries = realm.objects('Entry');
   const res = entries.filtered('date == $0', item.date);
 
@@ -34,12 +34,14 @@ const addEntryToDB = (item: DiaryEntryOut) => {
       createdAt: item.createdAt,
       modifiedAt: item.modifiedAt,
       mood: item.mood,
+      latitude: item?.latitude,
+      longitude: item?.longitude,
     });
   });
 };
 
 // Update
-const updateEntryToDB = (item: DiaryEntryDBType) => {
+const updateEntryToDB = async (item: DiaryEntryDBType) => {
   const entries = realm.objects('Entry');
   const res = entries.filtered('date == $0', item.date);
 
@@ -53,6 +55,8 @@ const updateEntryToDB = (item: DiaryEntryDBType) => {
       res[0].modifiedAt = dayjs(new Date()).valueOf();
       // @ts-ignore
       res[0].deleted = false;
+      res[0].latitude = item?.latitude;
+      res[0].longitude = item?.longitude;
     });
   } else {
     realm.write(() => {

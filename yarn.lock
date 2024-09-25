@@ -2377,6 +2377,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@react-native-community/geolocation@npm:^3.4.0":
+  version: 3.4.0
+  resolution: "@react-native-community/geolocation@npm:3.4.0"
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+  checksum: 4a1a334de5b8345ee5ca9af987718a4cdd0b401b6d024268330c98736eccd0bebf45fd1d4cb396558f429a4670e5b29da0b5b7ebd4e51ca12972d4b08b55d4bc
+  languageName: node
+  linkType: hard
+
 "@react-native-community/masked-view@npm:^0.1.11":
   version: 0.1.11
   resolution: "@react-native-community/masked-view@npm:0.1.11"
@@ -3344,6 +3354,7 @@ __metadata:
     "@babel/runtime": ^7.20.0
     "@eva-design/eva": ^2.2.0
     "@react-native-async-storage/async-storage": ^1.23.1
+    "@react-native-community/geolocation": ^3.4.0
     "@react-native-community/masked-view": ^0.1.11
     "@react-native-google-signin/google-signin": ^7.2.1
     "@react-native/babel-preset": 0.74.85
@@ -3378,6 +3389,7 @@ __metadata:
     react-native-calendars: ^1.1305.0
     react-native-dotenv: ^3.4.11
     react-native-flash-message: ^0.4.2
+    react-native-fs: ^2.20.0
     react-native-gesture-handler: ^2.17.1
     react-native-get-random-values: ^1.11.0
     react-native-keychain: ^8.2.0
@@ -3872,6 +3884,13 @@ __metadata:
   version: 1.0.2
   resolution: "balanced-match@npm:1.0.2"
   checksum: 9706c088a283058a8a99e0bf91b0a2f75497f185980d9ffa8b304de1d9e58ebda7c72c07ebf01dadedaac5b2907b2c6f566f660d62bd336c3468e960403b9d65
+  languageName: node
+  linkType: hard
+
+"base-64@npm:^0.1.0":
+  version: 0.1.0
+  resolution: "base-64@npm:0.1.0"
+  checksum: 5a42938f82372ab5392cbacc85a5a78115cbbd9dbef9f7540fa47d78763a3a8bd7d598475f0d92341f66285afd377509851a9bb5c67bbecb89686e9255d5b3eb
   languageName: node
   linkType: hard
 
@@ -9043,6 +9062,22 @@ __metadata:
     react: "*"
     react-native: "*"
   checksum: ab1e83db9f75888607cdeac8160194630a3e16f5e16133b6316d595b392b92f1c3b8e597e365636dcf3c622a4a5731753ce24fe9710867335c06ec0d212c5178
+  languageName: node
+  linkType: hard
+
+"react-native-fs@npm:^2.20.0":
+  version: 2.20.0
+  resolution: "react-native-fs@npm:2.20.0"
+  dependencies:
+    base-64: ^0.1.0
+    utf8: ^3.0.0
+  peerDependencies:
+    react-native: "*"
+    react-native-windows: "*"
+  peerDependenciesMeta:
+    react-native-windows:
+      optional: true
+  checksum: 0be9bb9a5c13b501d0a3006efc3aa5c0b5b211456ee04718297f4e522532f3527f1daa220bd67d3b82d819ed8fdab8f64b7d6e0d7b768c1fd1d8ec9122d94316
   languageName: node
   linkType: hard
 

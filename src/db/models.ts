@@ -8,6 +8,8 @@ class Entry extends Realm.Object {
   modifiedAt: number | undefined;
   deleted: boolean = false;
   mood: string = '';
+  latitude: number = 0;
+  longitude: number = 0;
 
   static schema: Realm.ObjectSchema = {
     name: 'Entry',
@@ -25,6 +27,8 @@ class Entry extends Realm.Object {
       // deleted: Boolean
       deleted: {type: 'bool', default: false},
       mood: 'string',
+      latitude: 'double?',
+      longitude: 'double?',
     },
     primaryKey: '_id',
   };

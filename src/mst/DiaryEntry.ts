@@ -12,6 +12,8 @@ const DiaryEntry = types.model('DiaryEntry', {
   // modifiedAt: UNIX timestamp
   modifiedAt: types.number,
   mood: types.optional(types.string, ''),
+  latitude: types.number,
+  longitude: types.number,
 });
 
 export default DiaryEntry;

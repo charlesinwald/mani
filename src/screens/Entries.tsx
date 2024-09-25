@@ -13,6 +13,8 @@ import EntryCard from '../components/EntryCard';
 import NoData from '../components/NoData';
 import Search from '../components/Search';
 
+import {PermissionsAndroid} from 'react-native';
+
 const Entries: React.FC<EntriesProps> = observer(({navigation}) => {
   const store = useContext(MSTContext);
   console.log('store: ', JSON.stringify(store.entries));
@@ -41,6 +43,7 @@ const Entries: React.FC<EntriesProps> = observer(({navigation}) => {
   useEffect(() => {
     refreshData();
     refreshOtherData();
+    requestLocationPermission();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const refreshData = () => {
@@ -51,6 +54,28 @@ const Entries: React.FC<EntriesProps> = observer(({navigation}) => {
 
   const refreshOtherData = () => {
     store.user.populateUserFromDB();
+  };
+
+  const requestLocationPermission = async () => {
+    try {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+        {
+          title: 'Diary App Location Permission',
+          message: 'Diary App needs access to your location to log entries.',
+          buttonNeutral: 'Ask Me Later',
+          buttonNegative: 'Cancel',
+          buttonPositive: 'OK',
+        },
+      );
+      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+        console.log('You can use the location');
+      } else {
+        console.log('Location permission denied');
+      }
+    } catch (err) {
+      console.warn(err);
+    }
   };
 
   // EXPERINMENTAL: Auto Sync

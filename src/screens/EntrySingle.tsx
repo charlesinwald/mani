@@ -22,46 +22,110 @@ import SadIcon from '../svg/SadIcon';
 import HappyIcon from '../svg/HappyIcon';
 import NeutralIcon from '../svg/NeutralIcon';
 import {findEntryById} from '../db/entry';
+import {late} from 'mobx-state-tree/dist/internal';
+import Geolocation from '@react-native-community/geolocation';
+import {Location} from '../types/types';
+import {reverseGeocode} from '../utils/reverseGeocode';
 
 const initialText = '';
 
 const EntrySingle: React.FC<EntrySingleProps> = observer(
   ({route, navigation}) => {
     const store = useContext(MSTContext);
+    console.log('store:', store);
     const [inputData, setInputData] = React.useState(initialText);
     const [active, setActive] = useState<any>(null);
     const [editable, setEditable] = useState(false);
     const [selectedMood, setSelectedMood] = useState(''); // Track mood selection
+    const [location, setLocation] = useState<Location | null>({
+      latitude: 0,
+      longitude: 0,
+    });
+    const [address, setAddress] = useState('');
 
     useEffect(() => {
-      const unsubscribe = navigation.addListener('focus', () => {
+      const fetchLocation = async () => {
+        const tempLocation = await getLocation();
+        setLocation(tempLocation);
+      };
+      fetchLocation();
+    }, []);
+
+    useEffect(() => {
+      const fetchAddress = async () => {
+        const tempAddress =
+          location?.latitude &&
+          location.longitude &&
+          (await reverseGeocode(location?.latitude, location?.longitude));
+        setAddress(tempAddress);
+      };
+      fetchAddress();
+    }, [location]);
+
+    const getLocation = async (): Promise<Location> => {
+      return new Promise((resolve, reject) => {
+        Geolocation.getCurrentPosition(
+          position => {
+            const {latitude, longitude} = position.coords;
+            console.log('Location: ', latitude, longitude);
+            resolve({latitude, longitude});
+          },
+          error => {
+            console.log('Error getting location', error);
+            reject(error);
+          },
+          {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
+        );
+      });
+    };
+
+    useEffect(() => {
+      const unsubscribe = navigation.addListener('focus', async () => {
         setInputData(initialText); // Reset the input data
         const entryId = route.params?.id; // Get the entry ID from the route params
 
         if (entryId) {
           const temp = findEntryById(entryId); // Find the entry by `_id`
-          console.log('loading temp:', temp);
           if (temp) {
             setActive(temp); // Set the active entry
             setInputData(temp.desc); // Set the description from the entry
             const mood = temp.mood || 'neutral'; // Default to 'neutral' if no mood
             setSelectedMood(mood);
+
+            // If location not available in the entry, fetch and update it
+            if (temp.latitude === 0 && temp.longitude === 0) {
+              const tempLocation = await getLocation();
+              setLocation(tempLocation);
+              setActive({
+                ...temp,
+                latitude: tempLocation.latitude,
+                longitude: tempLocation.longitude,
+              });
+            } else {
+              setLocation({
+                latitude: temp.latitude,
+                longitude: temp.longitude,
+              });
+            }
           }
         } else {
           // Handle case where no entry is found (perhaps new entry scenario)
-          let newItem = {
+          const tempLocation = await getLocation();
+          const newItem = {
             _id: uuidv4(),
             date: dayjs(new Date()).format('YYYY-MM-DD'),
             desc: '',
             createdAt: dayjs(new Date()).valueOf(),
             modifiedAt: '',
             mood: 'neutral', // Default mood
+            latitude: tempLocation.latitude,
+            longitude: tempLocation.longitude,
           };
           setActive(newItem);
         }
 
-        // Instead of resetting the whole params object, reset specific values or avoid resetting if not needed.
-        navigation.setParams({id: undefined}); // Safely reset the id param if needed
+        // Reset the id param
+        navigation.setParams({id: undefined});
       });
 
       return unsubscribe;
@@ -110,6 +174,8 @@ const EntrySingle: React.FC<EntrySingleProps> = observer(
             createdAt: dayjs(new Date()).valueOf(),
             modifiedAt: dayjs(new Date()).valueOf(),
             mood: selectedMood, // Add mood to the entry
+            latitude: 0,
+            longitude: 0,
           });
         } else {
           store.updateEntry({
@@ -128,11 +194,29 @@ const EntrySingle: React.FC<EntrySingleProps> = observer(
       setActive(null);
       navigation.goBack();
     };
-
+    console.log('active:', active);
     return (
       <Layout level="1">
         <ScrollView contentContainerStyle={styles.scrollview}>
           <Card>
+            <View>
+              {address ? (
+                <Text>Location: {address}</Text>
+              ) : active?.latitude !== null &&
+                active?.longitude !== null &&
+                location?.latitude !== 0 &&
+                location?.longitude !== 0 &&
+                active?.latitude !== 0 &&
+                active?.longitude !== 0 ? (
+                <Text>
+                  Location: {active?.latitude.toFixed(2)},{' '}
+                  {active?.longitude.toFixed(2)}
+                </Text>
+              ) : (
+                <Text>Location: Not available</Text> // Handle case where location is null or undefined
+              )}
+            </View>
+
             <View style={styles.inner}>
               {editable ? (
                 <TextInput

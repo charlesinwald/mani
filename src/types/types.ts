@@ -10,3 +10,8 @@ export interface HeaderType {
   style?: any;
   accessoryRight?: (props?: any) => React.ReactNode;
 }
+
+export type Location = {
+  latitude: number;
+  longitude: number;
+};
