@@ -60,7 +60,7 @@ const updateEntryToDB = async (item: DiaryEntryDBType) => {
     });
   } else {
     realm.write(() => {
-      console.log('updateEntryToDB: ', item);
+      // console.log('updateEntryToDB: ', item);
       // @ts-ignore
       realm.create('Entry', {
         ...item,

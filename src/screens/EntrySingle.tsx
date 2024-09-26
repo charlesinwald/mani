@@ -11,29 +11,25 @@ import {observer} from 'mobx-react-lite';
 import 'react-native-get-random-values';
 import {v4 as uuidv4} from 'uuid';
 import dayjs from 'dayjs';
-
 import {Card, Button, Text} from '@ui-kitten/components';
-
 import {MSTContext} from '../mst';
-
 import {EntrySingleProps} from '../navigation/types';
 import {Layout} from '../components/Layout';
 import SadIcon from '../svg/SadIcon';
 import HappyIcon from '../svg/HappyIcon';
 import NeutralIcon from '../svg/NeutralIcon';
 import {findEntryById} from '../db/entry';
-import {late} from 'mobx-state-tree/dist/internal';
 import Geolocation from '@react-native-community/geolocation';
 import {Location} from '../types/types';
 import {reverseGeocode} from '../utils/reverseGeocode';
+import useProperNouns from '../components/useProperNouns';
 
 const initialText = '';
 
 const EntrySingle: React.FC<EntrySingleProps> = observer(
   ({route, navigation}) => {
     const store = useContext(MSTContext);
-    console.log('store:', store);
-    const [inputData, setInputData] = React.useState(initialText);
+    const [inputData, setInputData] = useState(initialText);
     const [active, setActive] = useState<any>(null);
     const [editable, setEditable] = useState(false);
     const [selectedMood, setSelectedMood] = useState(''); // Track mood selection
@@ -42,6 +38,14 @@ const EntrySingle: React.FC<EntrySingleProps> = observer(
       longitude: 0,
     });
     const [address, setAddress] = useState('');
+    const [properNouns, setProperNouns] = useState([]);
+
+    // Call useProperNouns directly within the component
+    const nouns = useProperNouns(active?.desc || '');
+
+    useEffect(() => {
+      setProperNouns(nouns);
+    }, [nouns]);
 
     useEffect(() => {
       const fetchLocation = async () => {
@@ -194,7 +198,7 @@ const EntrySingle: React.FC<EntrySingleProps> = observer(
       setActive(null);
       navigation.goBack();
     };
-    console.log('active:', active);
+
     return (
       <Layout level="1">
         <ScrollView contentContainerStyle={styles.scrollview}>
@@ -224,7 +228,6 @@ const EntrySingle: React.FC<EntrySingleProps> = observer(
                   </View>
                 </TouchableOpacity>
               )}
-
               <View style={styles.moodWrapper}>
                 <Button
                   style={[
@@ -258,14 +261,12 @@ const EntrySingle: React.FC<EntrySingleProps> = observer(
                   )}
                 />
               </View>
-
               {active && active?.modifiedAt !== '' && (
                 <Text style={styles.statusText}>
                   Last updated:{' '}
                   {dayjs(active.modifiedAt).format('DD/MM/YYYY hh:mm A')}
                 </Text>
               )}
-
               <View style={styles.btnWrp}>
                 <Button
                   size="small"
@@ -282,6 +283,20 @@ const EntrySingle: React.FC<EntrySingleProps> = observer(
                   onPress={deleteEntry}>
                   Discard
                 </Button>
+              </View>
+              <View style={styles.container}>
+                {properNouns && properNouns.length > 0 ? (
+                  <View>
+                    <Text style={styles.result}>Detected Names:</Text>
+                    {properNouns.map((noun, index) => (
+                      <Text key={index} style={styles.entity}>
+                        {noun.text}
+                      </Text>
+                    ))}
+                  </View>
+                ) : (
+                  <Text style={styles.noResult}>No proper nouns detected</Text>
+                )}
               </View>
             </View>
           </Card>
@@ -349,5 +364,24 @@ const styles = StyleSheet.create({
     fontSize: 11,
     marginBottom: 10,
     fontStyle: 'italic',
+  },
+  container: {
+    padding: 16,
+    justifyContent: 'center',
+  },
+  result: {
+    marginTop: 12,
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  entity: {
+    fontSize: 16,
+    marginTop: 4,
+  },
+  noResult: {
+    marginTop: 12,
+    fontSize: 16,
+    fontStyle: 'italic',
+    color: 'gray',
   },
 });
