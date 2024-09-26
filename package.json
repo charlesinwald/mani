@@ -26,6 +26,7 @@
     "@robinbobin/react-native-google-drive-api-wrapper": "^1.2.1",
     "@ui-kitten/components": "^5.3.1",
     "@ui-kitten/eva-icons": "^5.3.1",
+    "axios": "^1.7.7",
     "crypto-es": "^2.1.0",
     "dayjs": "^1.11.0",
     "formik": "^2.2.9",

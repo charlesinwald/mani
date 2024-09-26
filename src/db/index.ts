@@ -48,3 +48,4 @@ const wipeRealmDB = async () => {
 // wipeRealmDB();
 // Open Realm with the updated config
 export const realm = new Realm(realmConfig);
+// console.log('Realm path:', realm.path);

@@ -23,6 +23,7 @@ import Geolocation from '@react-native-community/geolocation';
 import {Location} from '../types/types';
 import {reverseGeocode} from '../utils/reverseGeocode';
 import useProperNouns from '../components/useProperNouns';
+import {getWeather} from '../utils/weather';
 
 const initialText = '';
 
@@ -38,6 +39,7 @@ const EntrySingle: React.FC<EntrySingleProps> = observer(
       longitude: 0,
     });
     const [address, setAddress] = useState('');
+    const [weather, setWeather] = useState('');
     const [properNouns, setProperNouns] = useState([]);
 
     // Call useProperNouns directly within the component
@@ -62,6 +64,11 @@ const EntrySingle: React.FC<EntrySingleProps> = observer(
           location.longitude &&
           (await reverseGeocode(location?.latitude, location?.longitude));
         setAddress(tempAddress);
+        const weather = await getWeather(
+          `${location?.latitude},${location?.longitude}`,
+        );
+        console.log('Weather:', weather);
+        setWeather(weather);
       };
       fetchAddress();
     }, [location]);
@@ -205,7 +212,10 @@ const EntrySingle: React.FC<EntrySingleProps> = observer(
           <Card>
             <View>
               {address ? (
-                <Text>{address}</Text>
+                <View>
+                  <Text>{address}</Text>
+                  {weather ? <Text>{weather}</Text> : null}
+                </View>
               ) : (
                 <Text>Location not available</Text> // Handle case where location is null or undefined
               )}
