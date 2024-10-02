@@ -200,7 +200,7 @@ const AppNavigation = observer(() => {
               ),
               unmountOnBlur: true,
             }}
-            initialParams={{date: ''}}
+            initialParams={{date: '', newEntry: true}}
           />
         </Tab.Navigator>
       )}

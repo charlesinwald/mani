@@ -14,6 +14,7 @@ const readEntriesFromDB = (): DiaryEntryDBType[] => {
 // Store method to find entry by ID
 const findEntryById = (id: string): DiaryEntryDBType | null => {
   const entry = realm.objectForPrimaryKey('Entry', id); // Use objectForPrimaryKey to get a single entry
+  console.log(`entry ${id}`, entry);
   return entry ? (JSON.parse(JSON.stringify(entry)) as DiaryEntryDBType) : null;
 };
 
@@ -36,6 +37,8 @@ const addEntryToDB = async (item: DiaryEntryOut) => {
       mood: item.mood,
       latitude: item?.latitude,
       longitude: item?.longitude,
+      weather: item?.weather,
+      temperature: item?.temperature,
     });
   });
 };
@@ -57,6 +60,8 @@ const updateEntryToDB = async (item: DiaryEntryDBType) => {
       res[0].deleted = false;
       res[0].latitude = item?.latitude;
       res[0].longitude = item?.longitude;
+      res[0].weather = item?.weather;
+      res[0].temperature = item?.temperature;
     });
   } else {
     realm.write(() => {
@@ -133,6 +138,10 @@ const importToDBFromJSON = (data: DataFromFile) => {
           itemFoundInDB.modifiedAt = obj.modifiedAt;
           // @ts-ignore
           itemFoundInDB.deleted = obj.deleted;
+          itemFoundInDB.latitude = obj.latitude;
+          itemFoundInDB.longitude = obj.longitude;
+          itemFoundInDB.weather = obj.weather;
+          itemFoundInDB.temperature = obj.temperature;
         }
       }
     });

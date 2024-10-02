@@ -14,6 +14,8 @@ const DiaryEntry = types.model('DiaryEntry', {
   mood: types.optional(types.string, ''),
   latitude: types.number,
   longitude: types.number,
+  weather: types.optional(types.string, ''),
+  temperature: types.optional(types.string, ''),
 });
 
 export default DiaryEntry;

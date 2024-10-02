@@ -22,8 +22,8 @@ import {findEntryById} from '../db/entry';
 import Geolocation from '@react-native-community/geolocation';
 import {Location} from '../types/types';
 import {reverseGeocode} from '../utils/reverseGeocode';
-import useProperNouns from '../components/useProperNouns';
 import {getWeather} from '../utils/weather';
+import useProperNouns from '../components/useProperNouns';
 
 const initialText = '';
 
@@ -40,6 +40,7 @@ const EntrySingle: React.FC<EntrySingleProps> = observer(
     });
     const [address, setAddress] = useState('');
     const [weather, setWeather] = useState('');
+    const [temperature, setTemperature] = useState('');
     const [properNouns, setProperNouns] = useState([]);
 
     // Call useProperNouns directly within the component
@@ -58,20 +59,30 @@ const EntrySingle: React.FC<EntrySingleProps> = observer(
     }, []);
 
     useEffect(() => {
-      const fetchAddress = async () => {
+      const fetchAddressAndWeather = async () => {
         const tempAddress =
           location?.latitude &&
           location.longitude &&
           (await reverseGeocode(location?.latitude, location?.longitude));
         setAddress(tempAddress);
-        const weather = await getWeather(
-          `${location?.latitude},${location?.longitude}`,
-        );
-        console.log('Weather:', weather);
-        setWeather(weather);
+
+        if (!active?.weather || !active?.temperature) {
+          const tempWeather = await getWeather(
+            `${location?.latitude},${location?.longitude}`,
+          );
+          console.log('Weather:', tempWeather);
+
+          // Assuming the weather data is in the format "Partly cloudy +77°F" or "Partly cloudy -77°F"
+          const [weatherDescription, temp] = tempWeather.split(/ [+-]/);
+          setWeather(weatherDescription);
+          setTemperature(temp);
+        } else {
+          setWeather(active.weather);
+          setTemperature(active.temperature);
+        }
       };
-      fetchAddress();
-    }, [location]);
+      fetchAddressAndWeather();
+    }, [location, active]);
 
     const getLocation = async (): Promise<Location> => {
       return new Promise((resolve, reject) => {
@@ -94,10 +105,16 @@ const EntrySingle: React.FC<EntrySingleProps> = observer(
       const unsubscribe = navigation.addListener('focus', async () => {
         setInputData(initialText); // Reset the input data
         const entryId = route.params?.id; // Get the entry ID from the route params
-
+        if (route.params?.newEntry) {
+          setActive(null);
+          setInputData('');
+        }
+        console.log('entryId', entryId);
         if (entryId) {
           const temp = findEntryById(entryId); // Find the entry by `_id`
+          console.log('temp', temp);
           if (temp) {
+            console.log('temp', temp);
             setActive(temp); // Set the active entry
             setInputData(temp.desc); // Set the description from the entry
             const mood = temp.mood || 'neutral'; // Default to 'neutral' if no mood
@@ -131,12 +148,11 @@ const EntrySingle: React.FC<EntrySingleProps> = observer(
             mood: 'neutral', // Default mood
             latitude: tempLocation.latitude,
             longitude: tempLocation.longitude,
+            weather: '', // Initialize weather
+            temperature: '', // Initialize temperature
           };
           setActive(newItem);
         }
-
-        // Reset the id param
-        navigation.setParams({id: undefined});
       });
 
       return unsubscribe;
@@ -185,8 +201,10 @@ const EntrySingle: React.FC<EntrySingleProps> = observer(
             createdAt: dayjs(new Date()).valueOf(),
             modifiedAt: dayjs(new Date()).valueOf(),
             mood: selectedMood, // Add mood to the entry
-            latitude: 0,
-            longitude: 0,
+            latitude: location?.latitude || 0,
+            longitude: location?.longitude || 0,
+            weather: weather, // Add weather to the entry
+            temperature: temperature, // Add temperature to the entry
           });
         } else {
           store.updateEntry({
@@ -197,6 +215,8 @@ const EntrySingle: React.FC<EntrySingleProps> = observer(
             desc: inputData,
             modifiedAt: dayjs(new Date()).valueOf(),
             mood: selectedMood, // Update mood in the entry
+            weather: active.weather, // Keep existing weather
+            temperature: active.temperature, // Keep existing temperature
           });
         }
       }
@@ -215,6 +235,7 @@ const EntrySingle: React.FC<EntrySingleProps> = observer(
                 <View>
                   <Text>{address}</Text>
                   {weather ? <Text>{weather}</Text> : null}
+                  {temperature ? <Text>{temperature}</Text> : null}
                 </View>
               ) : (
                 <Text>Location not available</Text> // Handle case where location is null or undefined

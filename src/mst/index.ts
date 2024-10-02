@@ -47,6 +47,8 @@ const RootStore = types
             modifiedAt,
             latitude,
             longitude,
+            weather,
+            temperature,
           } = item;
           return deleted
             ? null
@@ -59,6 +61,8 @@ const RootStore = types
                 mood,
                 latitude: latitude !== undefined ? latitude : 0, // Ensure latitude is not undefined
                 longitude: longitude !== undefined ? longitude : 0, // Ensure longitude is not undefined
+                weather,
+                temperature,
               };
         })
         .filter(Boolean);

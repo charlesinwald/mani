@@ -10,6 +10,8 @@ class Entry extends Realm.Object {
   mood: string = '';
   latitude: number = 0;
   longitude: number = 0;
+  weather: string = '';
+  temperature: string = '';
 
   static schema: Realm.ObjectSchema = {
     name: 'Entry',
@@ -29,6 +31,8 @@ class Entry extends Realm.Object {
       mood: 'string',
       latitude: 'double?',
       longitude: 'double?',
+      weather: 'string',
+      temperature: 'string',
     },
     primaryKey: '_id',
   };

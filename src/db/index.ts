@@ -22,6 +22,12 @@ const realmConfig = {
           oldObjects[i].latitude !== undefined ? oldObjects[i].latitude : 0;
         newObjects[i].longitude =
           oldObjects[i].longitude !== undefined ? oldObjects[i].longitude : 0;
+        newObjects[i].weather =
+          oldObjects[i].weather !== undefined ? oldObjects[i].weather : '';
+        newObjects[i].temperature =
+          oldObjects[i].temperature !== undefined
+            ? oldObjects[i].temperature
+            : '';
       }
     }
   },
