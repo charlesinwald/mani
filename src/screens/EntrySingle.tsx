@@ -30,6 +30,7 @@ const initialText = '';
 const EntrySingle: React.FC<EntrySingleProps> = observer(
   ({route, navigation}) => {
     const store = useContext(MSTContext);
+    console.log('store', JSON.stringify(store.entries, null, 2));
     const [inputData, setInputData] = useState(initialText);
     const [active, setActive] = useState<any>(null);
     const [editable, setEditable] = useState(false);
@@ -111,7 +112,8 @@ const EntrySingle: React.FC<EntrySingleProps> = observer(
         }
         console.log('entryId', entryId);
         if (entryId) {
-          const temp = findEntryById(entryId); // Find the entry by `_id`
+          // Find the entry in the store instead of using findEntryById
+          const temp = store.entries.find(entry => entry._id === entryId);
           console.log('temp', temp);
           if (temp) {
             console.log('temp', temp);
