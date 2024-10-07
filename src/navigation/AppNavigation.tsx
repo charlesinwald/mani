@@ -5,6 +5,8 @@ import {createStackNavigator} from '@react-navigation/stack';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {Icon} from '@ui-kitten/components';
 import {observer} from 'mobx-react-lite';
+import {TouchableOpacity} from 'react-native';
+import {useNavigation} from '@react-navigation/native';
 
 import {MSTContext} from '../mst';
 
@@ -94,6 +96,17 @@ export const SettingsStack = () => {
         options={{title: 'Remove Password'}}
       />
     </Stack.Navigator>
+  );
+};
+
+const NewEntryButton = () => {
+  const navigation = useNavigation();
+  return (
+    <TouchableOpacity
+      onPress={() => navigation.navigate('EntrySingle', {newEntry: true})}
+      style={styles.tabButton}>
+      <Icon style={styles.icon} fill="#4361ee" name="plus-outline" />
+    </TouchableOpacity>
   );
 };
 
@@ -195,12 +208,9 @@ const AppNavigation = observer(() => {
             options={{
               tabBarTestID: 'Tab.New',
               tabBarLabel: 'New',
-              tabBarIcon: ({color}) => (
-                <Icon style={styles.icon} fill={color} name="plus-outline" />
-              ),
+              tabBarButton: () => <NewEntryButton />,
               unmountOnBlur: true,
             }}
-            initialParams={{date: '', newEntry: true}}
           />
         </Tab.Navigator>
       )}
@@ -212,6 +222,11 @@ const styles = StyleSheet.create({
   icon: {
     width: 32,
     height: 32,
+  },
+  tabButton: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 

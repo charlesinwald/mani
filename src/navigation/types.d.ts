@@ -9,7 +9,7 @@ export type RootTabParamList = {
   Entries: undefined;
   Jump: undefined;
   SettingsStack: undefined;
-  EntrySingle: {date: string};
+  EntrySingle: {id: string; newEntry?: boolean};
 };
 
 export type SettingsStackParamList = {

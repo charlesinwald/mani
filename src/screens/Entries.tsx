@@ -93,7 +93,7 @@ const Entries: React.FC<EntriesProps> = observer(({navigation}) => {
   // });
 
   const navigateToDetail = (id: string) => {
-    navigation.navigate('EntrySingle', {id}); // Pass the `_id` instead of date
+    navigation.navigate('EntrySingle', {id, newEntry: false}); // Pass the `_id` instead of date
   };
 
   const filteredData = store.entries.filter(item =>

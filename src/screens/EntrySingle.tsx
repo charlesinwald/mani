@@ -30,7 +30,7 @@ const initialText = '';
 const EntrySingle: React.FC<EntrySingleProps> = observer(
   ({route, navigation}) => {
     const store = useContext(MSTContext);
-    console.log('store', JSON.stringify(store.entries, null, 2));
+    // console.log('store', JSON.stringify(store.entries, null, 2));
     const [inputData, setInputData] = useState(initialText);
     const [active, setActive] = useState<any>(null);
     const [editable, setEditable] = useState(false);
@@ -65,7 +65,6 @@ const EntrySingle: React.FC<EntrySingleProps> = observer(
           const tempWeather = await getWeather(
             `${location?.latitude},${location?.longitude}`,
           );
-          console.log('Weather:', tempWeather);
 
           // Assuming the weather data is in the format "Partly cloudy +77°F" or "Partly cloudy -77°F"
           const [weatherDescription, temp] = tempWeather.split(/ [+-]/);
@@ -84,7 +83,6 @@ const EntrySingle: React.FC<EntrySingleProps> = observer(
         Geolocation.getCurrentPosition(
           position => {
             const {latitude, longitude} = position.coords;
-            console.log('Location: ', latitude, longitude);
             resolve({latitude, longitude});
           },
           error => {
@@ -98,61 +96,64 @@ const EntrySingle: React.FC<EntrySingleProps> = observer(
 
     useEffect(() => {
       const unsubscribe = navigation.addListener('focus', async () => {
-        setInputData(initialText); // Reset the input data
-        const entryId = route.params?.id; // Get the entry ID from the route params
-        if (route.params?.newEntry) {
-          setActive(null);
-          setInputData('');
-        }
-        console.log('entryId', entryId);
-        if (entryId) {
-          // Find the entry in the store instead of using findEntryById
-          const temp = store.entries.find(entry => entry._id === entryId);
-          console.log('temp', temp);
-          if (temp) {
-            console.log('temp', temp);
-            setActive(temp); // Set the active entry
-            setInputData(temp.desc); // Set the description from the entry
-            const mood = temp.mood || 'neutral'; // Default to 'neutral' if no mood
-            setSelectedMood(mood);
+        const entryId = route.params?.id;
+        const isNewEntry = route.params?.newEntry;
+        console.log('isNewEntry', isNewEntry);
+        console.log('route.params', route.params);
 
-            // If location not available in the entry, fetch and update it
-            if (temp.latitude === 0 && temp.longitude === 0) {
-              const tempLocation = await getLocation();
-              setLocation(tempLocation);
-              setActive({
-                ...temp,
-                latitude: tempLocation.latitude,
-                longitude: tempLocation.longitude,
-              });
-            } else {
-              setLocation({
-                latitude: temp.latitude,
-                longitude: temp.longitude,
-              });
-            }
-          }
-        } else {
-          // Handle case where no entry is found (perhaps new entry scenario)
-          const tempLocation = await getLocation();
-          const newItem = {
+        const tempLocation = await getLocation();
+        setLocation(tempLocation);
+
+        if (isNewEntry) {
+          // Handle new entry
+          const newEntry = {
             _id: uuidv4(),
-            date: dayjs(new Date()).format('YYYY-MM-DD'),
+            date: dayjs().format('YYYY-MM-DD'),
             desc: '',
-            createdAt: dayjs(new Date()).valueOf(),
+            createdAt: dayjs().valueOf(),
             modifiedAt: '',
-            mood: 'neutral', // Default mood
+            mood: 'neutral',
             latitude: tempLocation.latitude,
             longitude: tempLocation.longitude,
-            weather: '', // Initialize weather
-            temperature: '', // Initialize temperature
+            weather: '',
+            temperature: '',
           };
-          setActive(newItem);
+          setActive(newEntry);
+          setInputData('');
+          setSelectedMood('neutral');
+          fetchWeather(tempLocation);
+        } else if (entryId) {
+          // Handle existing entry
+          const existingEntry = store.entries.find(e => e._id === entryId);
+          if (existingEntry) {
+            setActive(existingEntry);
+            setInputData(existingEntry.desc);
+            setSelectedMood(existingEntry.mood || 'neutral');
+            if (existingEntry.weather && existingEntry.temperature) {
+              setWeather(existingEntry.weather);
+              setTemperature(existingEntry.temperature);
+            } else {
+              fetchWeather(tempLocation);
+            }
+          }
         }
       });
 
       return unsubscribe;
-    }, [route, navigation, store]);
+    }, [navigation, route.params, store.entries]);
+
+    const fetchWeather = async (loc: Location) => {
+      if (loc.latitude && loc.longitude) {
+        const tempWeather = await getWeather(
+          `${loc.latitude},${loc.longitude}`,
+        );
+
+        // Assuming the weather data is in the format "Partly cloudy +77°F" or "Partly cloudy -77°F"
+        const [weatherDescription, temp] = tempWeather.split(/ [+-]/);
+        setWeather(weatherDescription);
+        setTemperature(temp);
+      }
+    };
 
     const deleteEntry = () => {
       Alert.alert(
