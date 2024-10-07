@@ -42,14 +42,8 @@ const EntrySingle: React.FC<EntrySingleProps> = observer(
     const [address, setAddress] = useState('');
     const [weather, setWeather] = useState('');
     const [temperature, setTemperature] = useState('');
-    const [properNouns, setProperNouns] = useState([]);
 
-    // Call useProperNouns directly within the component
-    const nouns = useProperNouns(active?.desc || '');
-
-    useEffect(() => {
-      setProperNouns(nouns);
-    }, [nouns]);
+    const properNouns = useProperNouns(inputData);
 
     useEffect(() => {
       const fetchLocation = async () => {
@@ -318,12 +312,12 @@ const EntrySingle: React.FC<EntrySingleProps> = observer(
                 </Button>
               </View>
               <View style={styles.container}>
-                {properNouns && properNouns.length > 0 ? (
+                {properNouns.length > 0 ? (
                   <View>
                     <Text style={styles.result}>Detected Names:</Text>
                     {properNouns.map((noun, index) => (
                       <Text key={index} style={styles.entity}>
-                        {noun.text}
+                        {noun.text} - {noun.type}
                       </Text>
                     ))}
                   </View>
