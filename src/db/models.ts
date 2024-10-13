@@ -12,7 +12,6 @@ class Entry extends Realm.Object {
   longitude: number = 0;
   weather: string = '';
   temperature: string = '';
-  type: 'Short Term' | 'Long Term' | 'Lifetime' = 'Short Term'; // Default value
 
   static schema: Realm.ObjectSchema = {
     name: 'Entry',
@@ -34,10 +33,6 @@ class Entry extends Realm.Object {
       longitude: 'double?',
       weather: 'string',
       temperature: 'string',
-      type: {
-        type: 'string',
-        default: 'Short Term',
-      },
     },
     primaryKey: '_id',
   };
@@ -65,4 +60,26 @@ class User extends Realm.Object {
   };
 }
 
-export {Entry, User};
+class ChecklistEntry extends Realm.Object {
+  _id!: string;
+  title: string = '';
+  completed: boolean = false;
+  createdAt: number | undefined;
+  modifiedAt: number | undefined;
+  deleted: boolean = false;
+
+  static schema: Realm.ObjectSchema = {
+    name: 'ChecklistEntry',
+    properties: {
+      _id: 'string',
+      title: 'string',
+      completed: {type: 'bool', default: false},
+      createdAt: 'int',
+      modifiedAt: 'int',
+      deleted: {type: 'bool', default: false},
+    },
+    primaryKey: '_id',
+  };
+}
+
+export {Entry, User, ChecklistEntry};

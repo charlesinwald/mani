@@ -37,6 +37,7 @@ interface ScreenOptType {
 const ScreenOpts: Record<string, ScreenOptType> = {
   Password: {hideBackBtn: true},
   Entries: {hideBackBtn: true},
+  ChecklistEntries: {hideBackBtn: true},
   Jump: {hideBackBtn: true},
   EntrySingle: {hideBackBtn: false},
   Settings: {hideBackBtn: true},
@@ -51,6 +52,9 @@ import {
   RootTabParamList,
   SettingsStackParamList,
 } from './types';
+import ChecklistEntries from '../screens/ChecklistEntries';
+import ManifestIcon from '../svg/Manifest';
+import ChecklistEntrySingle from '../screens/ChecklistEntrySingle';
 
 // Navigators Definition
 const Tab = createBottomTabNavigator<RootTabParamList>();
@@ -171,7 +175,7 @@ const AppNavigation = observer(() => {
               ),
             }}
           />
-          <Tab.Screen
+          {/* <Tab.Screen
             name="Jump"
             component={Jump}
             options={{
@@ -184,6 +188,15 @@ const AppNavigation = observer(() => {
                   name="calendar-outline"
                 />
               ),
+            }}
+          /> */}
+          <Tab.Screen
+            name="ChecklistEntries"
+            component={ChecklistEntries}
+            options={{
+              tabBarTestID: 'Tab.Manifest',
+              tabBarLabel: 'Jump',
+              tabBarIcon: ({color}) => <ManifestIcon style={styles.icon} />,
             }}
           />
           <Tab.Screen
@@ -210,6 +223,14 @@ const AppNavigation = observer(() => {
               tabBarLabel: 'New',
               tabBarButton: () => <NewEntryButton />,
               unmountOnBlur: true,
+            }}
+          />
+          <Tab.Screen
+            name="ChecklistEntrySingle"
+            component={ChecklistEntrySingle}
+            options={{
+              unmountOnBlur: true,
+              tabBarButton: () => null,
             }}
           />
         </Tab.Navigator>

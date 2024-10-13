@@ -10,7 +10,6 @@ const DiaryEntry = types.model('DiaryEntry', {
   // createdAt: UNIX timestamp
   createdAt: types.number,
   // modifiedAt: UNIX timestamp
-  type: types.string,
   modifiedAt: types.number,
   mood: types.optional(types.string, ''),
   latitude: types.number,

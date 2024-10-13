@@ -4,7 +4,7 @@ import {realm} from './index';
 import rootStore from '../mst';
 import {DiaryEntryOut, DiaryEntryDBType} from '../types/DiaryEntry';
 import {DataFromFile} from '../utils/GoogleDrive';
-
+import {ChecklistEntryType} from '../types/ChecklistEntry';
 // Read All
 const readEntriesFromDB = (): DiaryEntryDBType[] => {
   const entries = realm.objects('Entry').sorted('date', true);
@@ -13,7 +13,7 @@ const readEntriesFromDB = (): DiaryEntryDBType[] => {
 
 // Store method to find entry by ID
 const findEntryById = (id: string): DiaryEntryDBType | null => {
-  const entry = realm.objectForPrimaryKey('Entry', id); // Use objectForPrimaryKey to get a single entry
+  const entry = realm.objectForPrimaryKey('Entry', id);
   console.log(`entry ${id}`, entry);
   return entry ? (JSON.parse(JSON.stringify(entry)) as DiaryEntryDBType) : null;
 };
@@ -21,11 +21,7 @@ const findEntryById = (id: string): DiaryEntryDBType | null => {
 // Add
 const addEntryToDB = async (item: DiaryEntryOut) => {
   const entries = realm.objects<DiaryEntryDBType>('Entry');
-  const res = entries.filtered(
-    'date == $0 AND type == $1',
-    item.date,
-    item.type,
-  );
+  const res = entries.filtered('date == $0', item.date);
 
   if (res.length) {
     return;
@@ -36,7 +32,6 @@ const addEntryToDB = async (item: DiaryEntryOut) => {
       _id: item._id,
       date: item.date,
       desc: item.desc,
-      type: item.type, // Include type field
       createdAt: item.createdAt,
       modifiedAt: item.modifiedAt,
       mood: item.mood,
@@ -51,17 +46,12 @@ const addEntryToDB = async (item: DiaryEntryOut) => {
 // Update
 const updateEntryToDB = async (item: DiaryEntryDBType) => {
   const entries = realm.objects<DiaryEntryDBType>('Entry');
-  const res = entries.filtered(
-    'date == $0 AND type == $1',
-    item.date,
-    item.type,
-  );
+  const res = entries.filtered('date == $0', item.date);
 
   if (res.length) {
     realm.write(() => {
       res[0].desc = item.desc;
       res[0].mood = item.mood;
-      res[0].type = item.type; // Update type field
       res[0].modifiedAt = dayjs(new Date()).valueOf();
       res[0].deleted = false;
       res[0].latitude = item?.latitude;
@@ -164,6 +154,70 @@ const importToDBFromJSON = (data: DataFromFile) => {
   rootStore.populateStoreFromDB();
 };
 
+// Read All Checklist Entries
+const readChecklistEntriesFromDB = (): ChecklistEntryType[] => {
+  const entries = realm.objects('ChecklistEntry').sorted('createdAt', true);
+  return JSON.parse(JSON.stringify(entries));
+};
+
+// Find Checklist Entry by ID
+const findChecklistEntryById = (id: string): ChecklistEntryType | null => {
+  const entry = realm.objectForPrimaryKey('ChecklistEntry', id);
+  console.log(`checklist entry ${id}`, entry);
+  return entry
+    ? (JSON.parse(JSON.stringify(entry)) as ChecklistEntryType)
+    : null;
+};
+
+// Add Checklist Entry
+const addChecklistEntryToDB = async (
+  item: Omit<ChecklistEntryType, '_id' | 'createdAt' | 'modifiedAt'>,
+) => {
+  realm.write(() => {
+    realm.create<ChecklistEntryType>('ChecklistEntry', {
+      _id: uuidv4(),
+      title: item.title,
+      desc: item.desc,
+      type: item.type,
+      isCompleted: false,
+      createdAt: dayjs(new Date()).valueOf(),
+      modifiedAt: dayjs(new Date()).valueOf(),
+    });
+  });
+};
+
+// Update Checklist Entry
+const updateChecklistEntryToDB = async (item: ChecklistEntryType) => {
+  const entry = realm.objectForPrimaryKey<ChecklistEntryType>(
+    'ChecklistEntry',
+    item._id,
+  );
+
+  if (entry) {
+    realm.write(() => {
+      entry.title = item.title;
+      entry.desc = item.desc;
+      entry.type = item.type;
+      entry.isCompleted = item.isCompleted;
+      entry.modifiedAt = dayjs(new Date()).valueOf();
+    });
+  }
+};
+
+// Delete Checklist Entry
+const deleteChecklistEntryFromDB = (id: string) => {
+  const entry = realm.objectForPrimaryKey<ChecklistEntryType>(
+    'ChecklistEntry',
+    id,
+  );
+
+  if (entry) {
+    realm.write(() => {
+      realm.delete(entry);
+    });
+  }
+};
+
 export {
   readEntriesFromDB,
   findEntryById,
@@ -173,4 +227,9 @@ export {
   deleteOneEntryFromDB,
   deleteAllEntriesFromDB,
   importToDBFromJSON,
+  readChecklistEntriesFromDB,
+  findChecklistEntryById,
+  addChecklistEntryToDB,
+  updateChecklistEntryToDB,
+  deleteChecklistEntryFromDB,
 };

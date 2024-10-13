@@ -20,7 +20,6 @@ const Entries: React.FC<EntriesProps> = observer(({navigation}) => {
   const store = useContext(MSTContext);
   const [searchQuery, setSearchQuery] = useState('');
   const [isRefreshing, setRefreshing] = useState(false);
-  const [currentList, setCurrentList] = useState('Short Term');
 
   const dummy = (status: boolean) => {
     if (!status) {
@@ -82,8 +81,8 @@ const Entries: React.FC<EntriesProps> = observer(({navigation}) => {
     navigation.navigate('EntrySingle', {id, newEntry: false});
   };
 
-  const filteredData = store.entries.filter(
-    item => item.desc.includes(searchQuery) && item.type === currentList,
+  const filteredData = store.entries.filter(item =>
+    item.desc.includes(searchQuery),
   );
 
   const renderItem = ({item}: any) => {
@@ -102,44 +101,14 @@ const Entries: React.FC<EntriesProps> = observer(({navigation}) => {
     );
   };
 
-  const onSwipeLeft = () => {
-    if (currentList === 'Lifetime') {
-      setCurrentList('Short Term');
-    } else if (currentList === 'Short Term') {
-      setCurrentList('Long Term');
-    }
-  };
-
-  const onSwipeRight = () => {
-    if (currentList === 'Long Term') {
-      setCurrentList('Short Term');
-    } else if (currentList === 'Short Term') {
-      setCurrentList('Lifetime');
-    }
-  };
-
   const renderListHeader = () => (
     <View style={styles.listHeader}>
-      {['Lifetime', 'Short Term', 'Long Term'].map(listType => (
-        <TouchableOpacity
-          key={listType}
-          onPress={() => setCurrentList(listType)}>
-          <Text
-            style={[
-              styles.listHeaderText,
-              currentList === listType && styles.boldText,
-            ]}>
-            {listType}
-          </Text>
-        </TouchableOpacity>
-      ))}
       <TouchableOpacity
         style={styles.addButton}
         onPress={() =>
           navigation.navigate('EntrySingle', {
             id: '',
             newEntry: true,
-            listType: currentList,
           })
         }>
         <Text style={styles.addButtonText}>Add New Entry</Text>
@@ -148,26 +117,21 @@ const Entries: React.FC<EntriesProps> = observer(({navigation}) => {
   );
 
   return (
-    <GestureRecognizer
-      onSwipeLeft={onSwipeLeft}
-      onSwipeRight={onSwipeRight}
-      style={styles.container}>
-      <Layout>
-        {renderListHeader()}
-        <List
-          style={styles.list}
-          contentContainerStyle={styles.contentContainerStyle}
-          data={filteredData}
-          extraData={toJS(store.entries)}
-          renderItem={renderItem}
-          refreshing={isRefreshing}
-          onRefresh={refreshData}
-          ListEmptyComponent={
-            <NoData title="Add a new entry by pressing + button" />
-          }
-        />
-      </Layout>
-    </GestureRecognizer>
+    <Layout>
+      {renderListHeader()}
+      <List
+        style={styles.list}
+        contentContainerStyle={styles.contentContainerStyle}
+        data={filteredData}
+        extraData={toJS(store.entries)}
+        renderItem={renderItem}
+        refreshing={isRefreshing}
+        onRefresh={refreshData}
+        ListEmptyComponent={
+          <NoData title="Add a new entry by pressing + button" />
+        }
+      />
+    </Layout>
   );
 });
 

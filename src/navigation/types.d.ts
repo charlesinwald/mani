@@ -7,9 +7,11 @@ export type RootStackParamList = {
 
 export type RootTabParamList = {
   Entries: undefined;
+  ChecklistEntries: undefined;
   Jump: undefined;
   SettingsStack: undefined;
   EntrySingle: {id: string; newEntry?: boolean; listType: string};
+  ChecklistEntrySingle: {id: string; newEntry?: boolean; type: string};
 };
 
 export type SettingsStackParamList = {
@@ -30,10 +32,18 @@ export type PasswordProps = StackScreenProps<RootStackParamList, 'Password'>;
 
 // Root Bottom Tab Screens
 export type EntriesProps = BottomTabScreenProps<RootTabParamList, 'Entries'>;
+export type ChecklistEntriesProps = BottomTabScreenProps<
+  RootTabParamList,
+  'ChecklistEntries'
+>;
 export type JumpProps = BottomTabScreenProps<RootTabParamList, 'Jump'>;
 export type EntrySingleProps = BottomTabScreenProps<
   RootTabParamList,
   'EntrySingle'
+>;
+export type ChecklistEntrySingleProps = BottomTabScreenProps<
+  RootTabParamList,
+  'ChecklistEntrySingle'
 >;
 
 // Settings Stack Screens
