@@ -1,5 +1,5 @@
 import React, {useContext, useState, useEffect} from 'react';
-import {StyleSheet} from 'react-native';
+import {StyleSheet, View, Text, TouchableOpacity} from 'react-native';
 import {observer, Observer} from 'mobx-react-lite';
 import {toJS} from 'mobx';
 
@@ -14,11 +14,13 @@ import NoData from '../components/NoData';
 import Search from '../components/Search';
 
 import {PermissionsAndroid} from 'react-native';
+import GestureRecognizer from 'react-native-swipe-gestures';
 
 const Entries: React.FC<EntriesProps> = observer(({navigation}) => {
   const store = useContext(MSTContext);
-  console.log('store: ', JSON.stringify(store.entries));
   const [searchQuery, setSearchQuery] = useState('');
+  const [isRefreshing, setRefreshing] = useState(false);
+  const [currentList, setCurrentList] = useState('Short Term');
 
   const dummy = (status: boolean) => {
     if (!status) {
@@ -37,8 +39,6 @@ const Entries: React.FC<EntriesProps> = observer(({navigation}) => {
       ),
     });
   }, [navigation]);
-
-  const [isRefreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     refreshData();
@@ -78,26 +78,12 @@ const Entries: React.FC<EntriesProps> = observer(({navigation}) => {
     }
   };
 
-  // EXPERINMENTAL: Auto Sync
-  // useEffect(() => {
-  //   // const now = dayjs();
-  //   // const lastSyncTime =
-  //   //   store?.user.lastSynced !== '' ? dayjs(store?.user.lastSynced) : dayjs();
-  //   // const difference = now.diff(lastSyncTime, 'hour');
-  //   // console.log('store: ', store);
-  //   // console.log('difference: ', difference);
-  //   // If used logined && AutoSync enabled && last synced time is greater than 2 hrs
-  //   // if (store.user._id !== '' && store.user.isAutoSync && difference > 2) {
-  //   //   exportToGDrive();
-  //   // }
-  // });
-
   const navigateToDetail = (id: string) => {
-    navigation.navigate('EntrySingle', {id, newEntry: false}); // Pass the `_id` instead of date
+    navigation.navigate('EntrySingle', {id, newEntry: false});
   };
 
-  const filteredData = store.entries.filter(item =>
-    item.desc.includes(searchQuery),
+  const filteredData = store.entries.filter(
+    item => item.desc.includes(searchQuery) && item.type === currentList,
   );
 
   const renderItem = ({item}: any) => {
@@ -108,7 +94,7 @@ const Entries: React.FC<EntriesProps> = observer(({navigation}) => {
             key={`entrycard-${item._id}`}
             desc={item.desc}
             date={item.date}
-            onPress={() => navigateToDetail(item._id)} // Navigate using `_id`
+            onPress={() => navigateToDetail(item._id)}
             mood={item.mood}
           />
         )}
@@ -116,30 +102,80 @@ const Entries: React.FC<EntriesProps> = observer(({navigation}) => {
     );
   };
 
+  const onSwipeLeft = () => {
+    if (currentList === 'Lifetime') {
+      setCurrentList('Short Term');
+    } else if (currentList === 'Short Term') {
+      setCurrentList('Long Term');
+    }
+  };
+
+  const onSwipeRight = () => {
+    if (currentList === 'Long Term') {
+      setCurrentList('Short Term');
+    } else if (currentList === 'Short Term') {
+      setCurrentList('Lifetime');
+    }
+  };
+
+  const renderListHeader = () => (
+    <View style={styles.listHeader}>
+      {['Lifetime', 'Short Term', 'Long Term'].map(listType => (
+        <TouchableOpacity
+          key={listType}
+          onPress={() => setCurrentList(listType)}>
+          <Text
+            style={[
+              styles.listHeaderText,
+              currentList === listType && styles.boldText,
+            ]}>
+            {listType}
+          </Text>
+        </TouchableOpacity>
+      ))}
+      <TouchableOpacity
+        style={styles.addButton}
+        onPress={() =>
+          navigation.navigate('EntrySingle', {
+            id: '',
+            newEntry: true,
+            listType: currentList,
+          })
+        }>
+        <Text style={styles.addButtonText}>Add New Entry</Text>
+      </TouchableOpacity>
+    </View>
+  );
+
   return (
-    <Layout>
-      {/* <Search onToggle={dummy} /> */}
-      <List
-        style={styles.list}
-        contentContainerStyle={styles.contentContainerStyle}
-        data={filteredData}
-        extraData={toJS(store.entries)}
-        renderItem={renderItem}
-        refreshing={isRefreshing}
-        onRefresh={refreshData}
-        ListEmptyComponent={
-          <NoData title="Add a new entry by pressing + button" />
-        }
-      />
-    </Layout>
+    <GestureRecognizer
+      onSwipeLeft={onSwipeLeft}
+      onSwipeRight={onSwipeRight}
+      style={styles.container}>
+      <Layout>
+        {renderListHeader()}
+        <List
+          style={styles.list}
+          contentContainerStyle={styles.contentContainerStyle}
+          data={filteredData}
+          extraData={toJS(store.entries)}
+          renderItem={renderItem}
+          refreshing={isRefreshing}
+          onRefresh={refreshData}
+          ListEmptyComponent={
+            <NoData title="Add a new entry by pressing + button" />
+          }
+        />
+      </Layout>
+    </GestureRecognizer>
   );
 });
 
 export default Entries;
 
 const styles = StyleSheet.create({
-  dateWrp: {
-    paddingHorizontal: 16,
+  container: {
+    flex: 1,
   },
   list: {
     paddingTop: 20,
@@ -150,14 +186,28 @@ const styles = StyleSheet.create({
     paddingBottom: 100,
     flexGrow: 1,
   },
-  btnWrpAbsolute: {
-    position: 'absolute',
-    bottom: 16,
-    right: 16,
+  listHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    paddingVertical: 10,
+    backgroundColor: '#fff',
   },
-  btnAdd: {
-    width: 60,
-    height: 60,
-    borderRadius: 60 / 2,
+  listHeaderText: {
+    fontSize: 16,
+    color: '#333',
+  },
+  boldText: {
+    fontWeight: 'bold',
+  },
+  addButton: {
+    marginTop: 10,
+    padding: 10,
+    backgroundColor: '#007BFF',
+    borderRadius: 5,
+    alignItems: 'center',
+  },
+  addButtonText: {
+    color: '#fff',
+    fontSize: 16,
   },
 });

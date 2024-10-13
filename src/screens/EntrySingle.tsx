@@ -24,15 +24,17 @@ import {Location} from '../types/types';
 import {reverseGeocode} from '../utils/reverseGeocode';
 import {getWeather} from '../utils/weather';
 import useProperNouns from '../components/useProperNouns';
+import {Picker} from '@react-native-picker/picker';
 
 const initialText = '';
 
 const EntrySingle: React.FC<EntrySingleProps> = observer(
   ({route, navigation}) => {
     const store = useContext(MSTContext);
-    // console.log('store', JSON.stringify(store.entries, null, 2));
+    console.log('store', JSON.stringify(store.entries, null, 2));
     const [inputData, setInputData] = useState(initialText);
     const [active, setActive] = useState<any>(null);
+    console.log('active', active);
     const [editable, setEditable] = useState(false);
     const [selectedMood, setSelectedMood] = useState(''); // Track mood selection
     const [location, setLocation] = useState<Location | null>({
@@ -42,6 +44,7 @@ const EntrySingle: React.FC<EntrySingleProps> = observer(
     const [address, setAddress] = useState('');
     const [weather, setWeather] = useState('');
     const [temperature, setTemperature] = useState('');
+    const [goalType, setGoalType] = useState('Short Term'); // Add state for goal type
 
     const properNouns = useProperNouns(inputData);
 
@@ -97,6 +100,7 @@ const EntrySingle: React.FC<EntrySingleProps> = observer(
     useEffect(() => {
       const unsubscribe = navigation.addListener('focus', async () => {
         const entryId = route.params?.id;
+        console.log('entryId', entryId);
         const isNewEntry = route.params?.newEntry;
         console.log('isNewEntry', isNewEntry);
         console.log('route.params', route.params);
@@ -117,6 +121,7 @@ const EntrySingle: React.FC<EntrySingleProps> = observer(
             longitude: tempLocation.longitude,
             weather: '',
             temperature: '',
+            type: goalType, // Use selected goal type
           };
           setActive(newEntry);
           setInputData('');
@@ -125,6 +130,7 @@ const EntrySingle: React.FC<EntrySingleProps> = observer(
         } else if (entryId) {
           // Handle existing entry
           const existingEntry = store.entries.find(e => e._id === entryId);
+          console.log('existingEntry', existingEntry);
           if (existingEntry) {
             setActive(existingEntry);
             setInputData(existingEntry.desc);
@@ -140,7 +146,7 @@ const EntrySingle: React.FC<EntrySingleProps> = observer(
       });
 
       return unsubscribe;
-    }, [navigation, route.params, store.entries]);
+    }, [navigation, route.params, store.entries, goalType]); // Add goalType to dependencies
 
     const fetchWeather = async (loc: Location) => {
       if (loc.latitude && loc.longitude) {
@@ -193,6 +199,7 @@ const EntrySingle: React.FC<EntrySingleProps> = observer(
         if (!active) {
           store.addEntry({
             _id: uuidv4(),
+            type: goalType, // Use selected goal type
             date: dayjs(new Date()).format('YYYY-MM-DD'),
             desc: inputData,
             createdAt: dayjs(new Date()).valueOf(),
@@ -208,6 +215,7 @@ const EntrySingle: React.FC<EntrySingleProps> = observer(
             ...active,
             _id: active._id,
             date: active.date,
+            type: active.type,
             createdAt: active.createdAt,
             desc: inputData,
             modifiedAt: dayjs(new Date()).valueOf(),
@@ -326,6 +334,16 @@ const EntrySingle: React.FC<EntrySingleProps> = observer(
                   <Text style={styles.noResult}>No proper nouns detected</Text>
                 )}
               </View>
+              {route.params?.newEntry && ( // Conditionally render the Picker for new entries
+                <Picker
+                  selectedValue={goalType}
+                  onValueChange={(itemValue) => setGoalType(itemValue)}
+                  style={styles.picker}>
+                  <Picker.Item label="Short Term" value="Short Term" />
+                  <Picker.Item label="Long Term" value="Long Term" />
+                  {/* Add more goal types as needed */}
+                </Picker>
+              )}
             </View>
           </Card>
         </ScrollView>
@@ -411,5 +429,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontStyle: 'italic',
     color: 'gray',
+  },
+  picker: {
+    height: 50,
+    width: '100%',
+    marginVertical: 10,
   },
 });

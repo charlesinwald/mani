@@ -20,18 +20,23 @@ const findEntryById = (id: string): DiaryEntryDBType | null => {
 
 // Add
 const addEntryToDB = async (item: DiaryEntryOut) => {
-  const entries = realm.objects('Entry');
-  const res = entries.filtered('date == $0', item.date);
+  const entries = realm.objects<DiaryEntryDBType>('Entry');
+  const res = entries.filtered(
+    'date == $0 AND type == $1',
+    item.date,
+    item.type,
+  );
 
   if (res.length) {
     return;
   }
 
   realm.write(() => {
-    realm.create('Entry', {
+    realm.create<DiaryEntryDBType>('Entry', {
       _id: item._id,
       date: item.date,
       desc: item.desc,
+      type: item.type, // Include type field
       createdAt: item.createdAt,
       modifiedAt: item.modifiedAt,
       mood: item.mood,
@@ -45,18 +50,19 @@ const addEntryToDB = async (item: DiaryEntryOut) => {
 
 // Update
 const updateEntryToDB = async (item: DiaryEntryDBType) => {
-  const entries = realm.objects('Entry');
-  const res = entries.filtered('date == $0', item.date);
+  const entries = realm.objects<DiaryEntryDBType>('Entry');
+  const res = entries.filtered(
+    'date == $0 AND type == $1',
+    item.date,
+    item.type,
+  );
 
   if (res.length) {
     realm.write(() => {
-      // @ts-ignore
       res[0].desc = item.desc;
-      // @ts-ignore
       res[0].mood = item.mood;
-      // @ts-ignore
+      res[0].type = item.type; // Update type field
       res[0].modifiedAt = dayjs(new Date()).valueOf();
-      // @ts-ignore
       res[0].deleted = false;
       res[0].latitude = item?.latitude;
       res[0].longitude = item?.longitude;
@@ -65,9 +71,7 @@ const updateEntryToDB = async (item: DiaryEntryDBType) => {
     });
   } else {
     realm.write(() => {
-      // console.log('updateEntryToDB: ', item);
-      // @ts-ignore
-      realm.create('Entry', {
+      realm.create<DiaryEntryDBType>('Entry', {
         ...item,
         _id: uuidv4(),
         createdAt: dayjs(new Date()).valueOf(),
@@ -112,7 +116,9 @@ const deleteAllEntriesFromDB = () => {
  * TODO: Delete functionality
  */
 const importToDBFromJSON = (data: DataFromFile) => {
-  let dataFromDB = realm.objects('Entry').sorted('date', true);
+  let dataFromDB = realm
+    .objects<DiaryEntryDBType>('Entry')
+    .sorted('date', true);
 
   // Soft deleted
   // @ts-ignore
@@ -124,7 +130,7 @@ const importToDBFromJSON = (data: DataFromFile) => {
       let itemFoundInDB = dataFromDB.find(item => item._id === obj._id);
       if (!itemFoundInDB) {
         // If does not exist in DB, Create
-        realm.create('Entry', obj);
+        realm.create<DiaryEntryDBType>('Entry', obj);
       } else {
         // @ts-ignore
         if (itemFoundInDB.modifiedAt < obj.modifiedAt) {
@@ -134,6 +140,8 @@ const importToDBFromJSON = (data: DataFromFile) => {
           itemFoundInDB.desc = obj.desc;
           // @ts-ignore
           itemFoundInDB.mood = obj.mood;
+          // @ts-ignore
+          itemFoundInDB.type = obj.type; // Update type field
           // @ts-ignore
           itemFoundInDB.modifiedAt = obj.modifiedAt;
           // @ts-ignore

@@ -12,6 +12,7 @@ class Entry extends Realm.Object {
   longitude: number = 0;
   weather: string = '';
   temperature: string = '';
+  type: 'Short Term' | 'Long Term' | 'Lifetime' = 'Short Term'; // Default value
 
   static schema: Realm.ObjectSchema = {
     name: 'Entry',
@@ -33,6 +34,10 @@ class Entry extends Realm.Object {
       longitude: 'double?',
       weather: 'string',
       temperature: 'string',
+      type: {
+        type: 'string',
+        default: 'Short Term',
+      },
     },
     primaryKey: '_id',
   };

@@ -2,7 +2,11 @@ import React from 'react';
 import {types, destroy, Instance} from 'mobx-state-tree';
 import dayjs from 'dayjs';
 
-import {DiaryEntryIn, DiaryEntryDBType} from '../types/DiaryEntry';
+import {
+  DiaryEntryIn,
+  DiaryEntryDBType,
+  DiaryEntryOut,
+} from '../types/DiaryEntry';
 
 // Stores
 import DiaryEntry from './DiaryEntry';
@@ -49,6 +53,7 @@ const RootStore = types
             longitude,
             weather,
             temperature,
+            type, // Include the type field
           } = item;
           return deleted
             ? null
@@ -63,6 +68,7 @@ const RootStore = types
                 longitude: longitude !== undefined ? longitude : 0, // Ensure longitude is not undefined
                 weather,
                 temperature,
+                type, // Include the type field
               };
         })
         .filter(Boolean);
@@ -71,8 +77,14 @@ const RootStore = types
     },
 
     addEntry(entry: DiaryEntryIn) {
-      self.entries.unshift(entry);
-      addEntryToDB(entry);
+      const entryOut: DiaryEntryOut = {
+        ...entry,
+        mood: entry.mood ?? 'Neutral', // Provide a default value for mood
+        weather: entry.weather ?? 'Unknown', // Provide a default value for weather
+        temperature: entry.temperature ?? 'Unknown', 
+      };
+      self.entries.unshift(entryOut);
+      addEntryToDB(entryOut);
     },
 
     updateEntry(entry: DiaryEntryDBType) {
@@ -101,7 +113,9 @@ const RootStore = types
     deleteEntry(entry: DiaryEntryDBType) {
       const entryToDelete = self.entries.find(e => e._id === entry._id);
       if (entryToDelete) {
-        softDeleteOneEntryFromDB(entryToDelete);
+        // Ensure the 'deleted' property is set before passing to the function
+        const entryWithDeleted = {...entryToDelete, deleted: true};
+        softDeleteOneEntryFromDB(entryWithDeleted);
         destroy(entryToDelete);
       }
     },
