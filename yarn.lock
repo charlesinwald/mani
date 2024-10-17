@@ -2465,6 +2465,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@react-native-community/slider@npm:^4.5.4":
+  version: 4.5.4
+  resolution: "@react-native-community/slider@npm:4.5.4"
+  checksum: a1e97773974ff24416f95332dc5f0e8befb9650ff309dd4a2f1e28603f493e2a7d158881d5cc50259967b2b36878cfe6ffd2c76670eb2798e9ce7cdf09306cf8
+  languageName: node
+  linkType: hard
+
 "@react-native-google-signin/google-signin@npm:^7.2.1":
   version: 7.2.2
   resolution: "@react-native-google-signin/google-signin@npm:7.2.2"
@@ -3448,6 +3455,7 @@ __metadata:
     "@react-native-async-storage/async-storage": ^1.23.1
     "@react-native-community/geolocation": ^3.4.0
     "@react-native-community/masked-view": ^0.1.11
+    "@react-native-community/slider": ^4.5.4
     "@react-native-google-signin/google-signin": ^7.2.1
     "@react-native-picker/picker": ^2.8.1
     "@react-native/babel-preset": 0.74.85

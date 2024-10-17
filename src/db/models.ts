@@ -7,7 +7,7 @@ class Entry extends Realm.Object {
   createdAt: number | undefined;
   modifiedAt: number | undefined;
   deleted: boolean = false;
-  mood: string = '';
+  mood: number = 1; // Changed from string to number with default value of 1
   latitude: number = 0;
   longitude: number = 0;
   weather: string = '';
@@ -28,7 +28,7 @@ class Entry extends Realm.Object {
       modifiedAt: 'int',
       // deleted: Boolean
       deleted: {type: 'bool', default: false},
-      mood: 'string',
+      mood: {type: 'int', default: 1}, // Updated to be an integer with a default value of 1
       latitude: 'double?',
       longitude: 'double?',
       weather: 'string',

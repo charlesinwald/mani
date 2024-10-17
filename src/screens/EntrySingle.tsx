@@ -25,6 +25,7 @@ import {reverseGeocode} from '../utils/reverseGeocode';
 import {getWeather} from '../utils/weather';
 import useProperNouns from '../components/useProperNouns';
 import {Picker} from '@react-native-picker/picker';
+import Slider from '@react-native-community/slider'; // Import the Slider component
 
 const initialText = '';
 
@@ -34,9 +35,9 @@ const EntrySingle: React.FC<EntrySingleProps> = observer(
     console.log('store', JSON.stringify(store.entries, null, 2));
     const [inputData, setInputData] = useState(initialText);
     const [active, setActive] = useState<any>(null);
-    console.log('active', active);
+    // console.log('active', active);
     const [editable, setEditable] = useState(false);
-    const [selectedMood, setSelectedMood] = useState(''); // Track mood selection
+    const [selectedMood, setSelectedMood] = useState(3); // Change initial state to a number (1-5)
     const [location, setLocation] = useState<Location | null>({
       latitude: 0,
       longitude: 0,
@@ -105,10 +106,10 @@ const EntrySingle: React.FC<EntrySingleProps> = observer(
         console.log('isNewEntry', isNewEntry);
         console.log('route.params', route.params);
 
-        const tempLocation = await getLocation();
-        setLocation(tempLocation);
-
         if (isNewEntry) {
+          const tempLocation = await getLocation(); // Fetch location only for new entries
+          setLocation(tempLocation);
+          console.log('isNewEntry condition', isNewEntry);
           // Handle new entry
           const newEntry = {
             _id: uuidv4(),
@@ -125,24 +126,23 @@ const EntrySingle: React.FC<EntrySingleProps> = observer(
           };
           setActive(newEntry);
           setInputData('');
-          setSelectedMood('neutral');
+          setSelectedMood(3);
           fetchWeather(tempLocation);
-        } else if (entryId) {
+        } else {
           // Handle existing entry
+          console.log('else if entryid', store.entries);
           const existingEntry = store.entries.find(e => e._id === entryId);
           console.log('existingEntry', existingEntry);
           if (existingEntry) {
             setActive(existingEntry);
             setInputData(existingEntry.desc);
-            setSelectedMood(existingEntry.mood || 'neutral');
-            if (existingEntry.weather && existingEntry.temperature) {
-              setWeather(existingEntry.weather);
-              setTemperature(existingEntry.temperature);
-            } else {
-              fetchWeather(tempLocation);
-            }
+            setSelectedMood(existingEntry.mood || 3);
+            // Load weather and temperature from existing entry
+            setWeather(existingEntry.weather);
+            setTemperature(existingEntry.temperature);
           }
         }
+        console.log('after else if entryid');
       });
 
       return unsubscribe;
@@ -199,7 +199,7 @@ const EntrySingle: React.FC<EntrySingleProps> = observer(
         if (!active) {
           store.addEntry({
             _id: uuidv4(),
-            type: goalType, // Use selected goal type
+            //type: goalType, // Use selected goal type
             date: dayjs(new Date()).format('YYYY-MM-DD'),
             desc: inputData,
             createdAt: dayjs(new Date()).valueOf(),
@@ -265,42 +265,22 @@ const EntrySingle: React.FC<EntrySingleProps> = observer(
                 </TouchableOpacity>
               )}
               <View style={styles.moodWrapper}>
-                <Button
-                  style={[
-                    styles.moodButton,
-                    selectedMood === 'sad' && styles.selectedMood,
-                  ]}
-                  onPress={() => setSelectedMood('sad')}
-                  status="danger"
-                  accessoryLeft={props => <SadIcon {...props} fill="#FFFFFF" />}
-                />
-                <Button
-                  style={[
-                    styles.moodButton,
-                    selectedMood === 'neutral' && styles.selectedMood,
-                  ]}
-                  onPress={() => setSelectedMood('neutral')}
-                  status="warning"
-                  accessoryLeft={props => (
-                    <NeutralIcon {...props} fill="#FFFFFF" />
-                  )}
-                />
-                <Button
-                  style={[
-                    styles.moodButton,
-                    selectedMood === 'happy' && styles.selectedMood,
-                  ]}
-                  onPress={() => setSelectedMood('happy')}
-                  status="success"
-                  accessoryLeft={props => (
-                    <HappyIcon {...props} fill="#FFFFFF" />
-                  )}
-                />
+                <Text style={styles.moodText}>Mood: {selectedMood}</Text>
               </View>
+              <Slider
+                minimumValue={1}
+                maximumValue={5}
+                step={1}
+                value={selectedMood}
+                onValueChange={value => setSelectedMood(value)} // Update mood on slider change
+                style={styles.slider}
+              />
               {active && active?.modifiedAt !== '' && (
                 <Text style={styles.statusText}>
                   Last updated:{' '}
-                  {dayjs(active.modifiedAt).format('DD/MM/YYYY hh:mm A')}
+                  <Text>
+                    {dayjs(active.modifiedAt).format('DD/MM/YYYY hh:mm A')}
+                  </Text>
                 </Text>
               )}
               <View style={styles.btnWrp}>
@@ -334,16 +314,6 @@ const EntrySingle: React.FC<EntrySingleProps> = observer(
                   <Text style={styles.noResult}>No proper nouns detected</Text>
                 )}
               </View>
-              {route.params?.newEntry && ( // Conditionally render the Picker for new entries
-                <Picker
-                  selectedValue={goalType}
-                  onValueChange={(itemValue) => setGoalType(itemValue)}
-                  style={styles.picker}>
-                  <Picker.Item label="Short Term" value="Short Term" />
-                  <Picker.Item label="Long Term" value="Long Term" />
-                  {/* Add more goal types as needed */}
-                </Picker>
-              )}
             </View>
           </Card>
         </ScrollView>
@@ -394,9 +364,12 @@ const styles = StyleSheet.create({
   },
   btnSave: {},
   moodWrapper: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
+    alignItems: 'center', // Center items horizontally
     marginVertical: 10,
+  },
+  moodText: {
+    fontSize: 16,
+    textAlign: 'center',
   },
   moodButton: {
     flex: 1,
@@ -434,5 +407,9 @@ const styles = StyleSheet.create({
     height: 50,
     width: '100%',
     marginVertical: 10,
+  },
+  slider: {
+    width: '100%',
+    height: 40,
   },
 });
