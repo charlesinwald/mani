@@ -14,6 +14,7 @@ const ChecklistEntryCard: React.FC<ChecklistEntryCardProps> = ({
   isCompleted,
   onPress,
   createdAt,
+  ...props
 }) => {
   const formattedDate = new Date(createdAt).toLocaleDateString('en-US', {
     year: 'numeric',
@@ -22,7 +23,7 @@ const ChecklistEntryCard: React.FC<ChecklistEntryCardProps> = ({
   });
 
   return (
-    <TouchableOpacity onPress={onPress}>
+    <TouchableOpacity onPress={onPress} {...props}>
       <Card style={styles.card}>
         <View style={styles.cardContent}>
           <View style={styles.titleContainer}>

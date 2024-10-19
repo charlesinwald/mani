@@ -7,7 +7,12 @@ import ChecklistEntryCard from './ChecklistEntryCard';
 import NoData from './NoData';
 import {ChecklistEntryType} from '../types/ChecklistEntry';
 
-const ChecklistTab = observer(({type, navigation}) => {
+interface ChecklistTabProps {
+  type: string;
+  navigation: any;
+}
+
+const ChecklistTab = observer<ChecklistTabProps>(({type, navigation}) => {
   const store = useContext(MSTContext);
 
   // Filter checklist entries based on type
@@ -21,6 +26,7 @@ const ChecklistTab = observer(({type, navigation}) => {
       isCompleted={item.isCompleted ? 1 : 0}
       createdAt={item.createdAt}
       onPress={() => navigateToDetail(item._id)}
+      key={item._id}
     />
   );
 

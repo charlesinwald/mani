@@ -116,7 +116,8 @@ const ChecklistEntrySingle: React.FC<ChecklistEntrySingleProps> = observer(
 
       setInputData(initialText);
       setActive(null);
-      navigation.goBack();
+      // Navigate back to the ChecklistEntries tab
+      navigation.navigate('ChecklistEntries');
     };
 
     return (
