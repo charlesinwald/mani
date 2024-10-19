@@ -89,8 +89,10 @@ const RootStore = types
       self.entries = modifieddata;
 
       // Populate checklist entries
-      let checklistItemsFromDB = readChecklistEntriesFromDB();
-      self.checklistEntries = cast(checklistItemsFromDB);
+      let checklistItemsFromDB = readChecklistEntriesFromDB().filter(
+        item => item !== undefined,
+      );
+      self.checklistEntries = checklistItemsFromDB;
     },
 
     addEntry(entry: DiaryEntryIn) {
@@ -141,10 +143,12 @@ const RootStore = types
       const newEntry = ChecklistEntryModel.create({
         _id: uuidv4(),
         ...entry,
-        title: entry.title || '', // Provide default empty string if title is undefined
+        desc: entry.desc || '', // Provide default empty string if title is undefined
         createdAt: dayjs().valueOf(),
         modifiedAt: dayjs().valueOf(),
+        type: entry.type || 'shortterm', // Provide default value if type is undefined
       });
+      console.log('newEntry', newEntry);
       self.checklistEntries.push(newEntry);
       addChecklistEntryToDB(newEntry as ChecklistEntryType);
     },

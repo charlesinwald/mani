@@ -1,10 +1,11 @@
 import React from 'react';
 import {StyleSheet, View, Text, TouchableOpacity} from 'react-native';
 import {Card} from '@ui-kitten/components';
+// @ts-expect-error - no type definitions available
 import CheckBox from 'react-native-checkbox';
 
 interface ChecklistEntryCardProps {
-  title: string;
+  desc: string;
   createdAt: number;
   isCompleted: number;
   onPress: () => void;
@@ -12,7 +13,7 @@ interface ChecklistEntryCardProps {
 }
 
 const ChecklistEntryCard: React.FC<ChecklistEntryCardProps> = ({
-  title,
+  desc,
   isCompleted,
   onPress,
   createdAt,
@@ -26,12 +27,12 @@ const ChecklistEntryCard: React.FC<ChecklistEntryCardProps> = ({
   });
 
   return (
-    <TouchableOpacity onPress={()=> onPress()} {...props}>
+    <TouchableOpacity onPress={() => onPress()} {...props}>
       <Card style={styles.card}>
         <View style={styles.cardContent}>
           <View style={styles.titleContainer}>
             <Text style={styles.title} numberOfLines={1} ellipsizeMode="tail">
-              {title}
+              {desc}
             </Text>
             <Text style={styles.date}>{formattedDate}</Text>
           </View>

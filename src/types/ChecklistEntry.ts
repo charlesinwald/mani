@@ -1,6 +1,5 @@
 type ChecklistEntryType = {
   _id: string;
-  title?: string;
   desc: string;
   type: 'shortterm' | 'longterm' | 'lifetime';
   isCompleted: boolean;

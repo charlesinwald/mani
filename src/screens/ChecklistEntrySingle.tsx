@@ -96,12 +96,17 @@ const ChecklistEntrySingle: React.FC<ChecklistEntrySingleProps> = observer(
 
     const addEntry = () => {
       if (inputData.trim() !== '') {
+        const entryData = {
+          type: goalType,
+          desc: inputData,
+          isCompleted: false,
+          createdAt: dayjs().valueOf(),
+          modifiedAt: dayjs().valueOf(),
+        };
+
         if (!active) {
-          store.addChecklistEntry({
-            type: goalType,
-            desc: inputData,
-            isCompleted: false,
-          });
+          // Ensure all required fields are provided
+          store.addChecklistEntry(entryData);
         } else {
           store.updateChecklistEntry({
             ...active,
@@ -112,6 +117,8 @@ const ChecklistEntrySingle: React.FC<ChecklistEntrySingleProps> = observer(
             modifiedAt: dayjs(new Date()).valueOf(),
           });
         }
+      } else {
+        Alert.alert('Error', 'Description cannot be empty.');
       }
 
       setInputData(initialText);

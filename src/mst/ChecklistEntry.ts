@@ -5,7 +5,6 @@ import dayjs from 'dayjs';
 const ChecklistEntryModel = types
   .model('ChecklistEntry', {
     _id: types.identifier,
-    title: types.string,
     desc: types.string,
     type: types.enumeration('ChecklistEntryType', [
       'shortterm',
@@ -17,10 +16,6 @@ const ChecklistEntryModel = types
     modifiedAt: types.number,
   })
   .actions(self => ({
-    setTitle(title: string) {
-      self.title = title;
-      self.modifiedAt = dayjs().valueOf();
-    },
     setDescription(description: string) {
       self.desc = description;
       self.modifiedAt = dayjs().valueOf();
@@ -54,7 +49,6 @@ export const createChecklistEntryModel = (
 ) => {
   const data: ChecklistEntrySnapshotIn = {
     _id: snapshot?._id ?? uuidv4(),
-    title: snapshot?.title ?? '',
     desc: snapshot?.desc ?? '',
     type: snapshot?.type ?? 'shortterm',
     isCompleted: snapshot?.isCompleted ?? false,

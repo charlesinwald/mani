@@ -176,7 +176,6 @@ const addChecklistEntryToDB = async (
   realm.write(() => {
     realm.create<ChecklistEntryType>('ChecklistEntry', {
       _id: uuidv4(),
-      title: item.title,
       desc: item.desc,
       type: item.type,
       isCompleted: false,
@@ -195,7 +194,6 @@ const updateChecklistEntryToDB = async (item: ChecklistEntryType) => {
 
   if (entry) {
     realm.write(() => {
-      entry.title = item.title;
       entry.desc = item.desc;
       entry.type = item.type;
       entry.isCompleted = item.isCompleted;

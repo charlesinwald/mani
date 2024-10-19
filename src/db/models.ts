@@ -62,21 +62,23 @@ class User extends Realm.Object {
 
 class ChecklistEntry extends Realm.Object {
   _id!: string;
-  title: string = '';
+  desc: string = '';
   isCompleted: boolean = false;
   createdAt: number | undefined;
   modifiedAt: number | undefined;
   deleted: boolean = false;
+  type: 'shortterm' | 'longterm' | 'lifetime' = 'shortterm';
 
   static schema: Realm.ObjectSchema = {
     name: 'ChecklistEntry',
     properties: {
       _id: 'string',
-      title: 'string',
+      desc: 'string',
       isCompleted: {type: 'bool', default: false},
       createdAt: 'int',
       modifiedAt: 'int',
       deleted: {type: 'bool', default: false},
+      type: {type: 'string', default: 'shortterm'},
     },
     primaryKey: '_id',
   };

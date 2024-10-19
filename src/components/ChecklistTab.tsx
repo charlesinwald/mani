@@ -22,14 +22,17 @@ const ChecklistTab = observer<ChecklistTabProps>(({type, navigation}) => {
 
   const renderItem = (item: ChecklistEntryType) => (
     <ChecklistEntryCard
-      title={item.desc}
+      desc={item.desc}
       isCompleted={item.isCompleted ? 1 : 0}
       createdAt={item.createdAt}
       onPress={() => {
         console.log('Pressed');
         navigateToDetail(item._id);
       }}
-      onToggleCompletion={() => store.toggleChecklistEntryCompletion(item._id)}
+      onToggleCompletion={() => {
+        console.log('Toggled');
+        store.toggleChecklistEntryCompletion(item._id);
+      }}
       key={item._id}
     />
   );
