@@ -37,7 +37,7 @@ const ChecklistEntries: React.FC<ChecklistEntriesProps> = observer(
       <Layout>
         <View style={styles.tabBar}>
           {tabs.map((tab, index) => (
-            <TouchableOpacity onPress={() => setCurrentTab(index)}>
+            <TouchableOpacity onPress={() => setCurrentTab(index)} key={index}>
               <Text
                 key={index}
                 style={[
