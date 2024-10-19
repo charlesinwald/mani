@@ -1,12 +1,14 @@
 import React from 'react';
 import {StyleSheet, View, Text, TouchableOpacity} from 'react-native';
 import {Card} from '@ui-kitten/components';
+import CheckBox from 'react-native-checkbox';
 
 interface ChecklistEntryCardProps {
   title: string;
   createdAt: number;
   isCompleted: number;
   onPress: () => void;
+  onToggleCompletion: () => void; // New prop for toggling completion
 }
 
 const ChecklistEntryCard: React.FC<ChecklistEntryCardProps> = ({
@@ -14,6 +16,7 @@ const ChecklistEntryCard: React.FC<ChecklistEntryCardProps> = ({
   isCompleted,
   onPress,
   createdAt,
+  onToggleCompletion,
 }) => {
   const formattedDate = new Date(createdAt).toLocaleDateString('en-US', {
     year: 'numeric',
@@ -22,7 +25,7 @@ const ChecklistEntryCard: React.FC<ChecklistEntryCardProps> = ({
   });
 
   return (
-    <TouchableOpacity onPress={onPress}>
+    <TouchableOpacity onPress={()=> onPress()}>
       <Card style={styles.card}>
         <View style={styles.cardContent}>
           <View style={styles.titleContainer}>
@@ -32,7 +35,14 @@ const ChecklistEntryCard: React.FC<ChecklistEntryCardProps> = ({
             <Text style={styles.date}>{formattedDate}</Text>
           </View>
           <View style={styles.progressContainer}>
-            <Text style={styles.progressText}>{isCompleted}</Text>
+            {/* Replace the text with a checkbox */}
+            <CheckBox
+              value={isCompleted === 1} // Assuming 1 means completed
+              onValueChange={() => {
+                onToggleCompletion(); // Call the new function to handle the state change
+              }} // Handle checkbox toggle
+              label={''}
+            />
           </View>
         </View>
         {/* <Icon name="chevron-right" size={24} color="#8F9BB3" /> */}

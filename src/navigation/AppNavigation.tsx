@@ -18,7 +18,7 @@ import Password from '../screens/security/Password';
 
 // Tab
 import Entries from '../screens/Entries';
-import Jump from '../screens/Jump';
+import Checklist from '../screens/Checklist';
 import Settings from '../screens/Settings';
 import EntrySingle from '../screens/EntrySingle';
 
@@ -38,7 +38,7 @@ const ScreenOpts: Record<string, ScreenOptType> = {
   Password: {hideBackBtn: true},
   Entries: {hideBackBtn: true},
   ChecklistEntries: {hideBackBtn: true},
-  Jump: {hideBackBtn: true},
+  Checklist: {hideBackBtn: true},
   EntrySingle: {hideBackBtn: false},
   Settings: {hideBackBtn: true},
   SetPassword: {hideBackBtn: false},
@@ -176,11 +176,11 @@ const AppNavigation = observer(() => {
             }}
           />
           {/* <Tab.Screen
-            name="Jump"
-            component={Jump}
+            name="Checklist"
+            component={Checklist}
             options={{
-              tabBarTestID: 'Tab.Jump',
-              tabBarLabel: 'Jump',
+              tabBarTestID: 'Tab.Checklist',
+              tabBarLabel: 'Checklist',
               tabBarIcon: ({color}) => (
                 <Icon
                   style={styles.icon}
@@ -195,7 +195,7 @@ const AppNavigation = observer(() => {
             component={ChecklistEntries}
             options={{
               tabBarTestID: 'Tab.Manifest',
-              tabBarLabel: 'Jump',
+              tabBarLabel: 'Checklist',
               tabBarIcon: ({color}) => <ManifestIcon style={styles.icon} />,
             }}
           />
@@ -221,7 +221,8 @@ const AppNavigation = observer(() => {
             options={{
               tabBarTestID: 'Tab.New',
               tabBarLabel: 'New',
-              tabBarButton: () => <NewEntryButton />,
+              // tabBarButton: () => <NewEntryButton />,
+              tabBarButton: () => null,
               unmountOnBlur: true,
             }}
           />

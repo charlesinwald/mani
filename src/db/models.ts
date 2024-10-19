@@ -3,7 +3,7 @@ import Realm from 'realm';
 class Entry extends Realm.Object {
   _id!: string;
   date: string = '';
-  desc: string = '';
+  desc: string | undefined = ''; // Updated to allow undefined
   createdAt: number | undefined;
   modifiedAt: number | undefined;
   deleted: boolean = false;
@@ -21,7 +21,7 @@ class Entry extends Realm.Object {
       // date: 2021-11-15
       date: 'string',
       // desc: Random strings
-      desc: 'string',
+      desc: 'string?', // Updated to allow undefined
       // createdAt: UNIX timestamp
       createdAt: 'int',
       // modifiedAt: UNIX timestamp
@@ -63,7 +63,7 @@ class User extends Realm.Object {
 class ChecklistEntry extends Realm.Object {
   _id!: string;
   title: string = '';
-  completed: boolean = false;
+  isCompleted: boolean = false;
   createdAt: number | undefined;
   modifiedAt: number | undefined;
   deleted: boolean = false;
@@ -73,7 +73,7 @@ class ChecklistEntry extends Realm.Object {
     properties: {
       _id: 'string',
       title: 'string',
-      completed: {type: 'bool', default: false},
+      isCompleted: {type: 'bool', default: false},
       createdAt: 'int',
       modifiedAt: 'int',
       deleted: {type: 'bool', default: false},

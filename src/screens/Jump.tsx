@@ -4,7 +4,7 @@ import {observer} from 'mobx-react-lite';
 import {Calendar, LocaleConfig, DateData} from 'react-native-calendars';
 import dayjs from 'dayjs';
 import {MSTContext} from '../mst';
-import {JumpProps} from '../navigation/types';
+import {ChecklistProps} from '../navigation/types';
 import {Layout} from '../components/Layout';
 
 interface CalendarMarkedValue {
@@ -55,7 +55,7 @@ LocaleConfig.locales.en = {
 
 LocaleConfig.defaultLocale = 'en';
 
-const Jump: React.FC<JumpProps> = observer(({navigation}) => {
+const Checklist: React.FC<ChecklistProps> = observer(({navigation}) => {
   const store = useContext(MSTContext);
 
   let markedDates = store.entries.reduce((acc, current) => {
@@ -73,7 +73,7 @@ const Jump: React.FC<JumpProps> = observer(({navigation}) => {
     <Layout style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollview}>
         <Calendar
-          testID="JumpScreen.Calendar"
+          testID="ChecklistScreen.Calendar"
           current={today}
           minDate={'2020-01-01'}
           maxDate={today}
@@ -93,7 +93,7 @@ const Jump: React.FC<JumpProps> = observer(({navigation}) => {
   );
 });
 
-export default Jump;
+export default Checklist;
 
 const styles = StyleSheet.create({
   container: {

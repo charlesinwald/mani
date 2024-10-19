@@ -164,6 +164,16 @@ const RootStore = types
         deleteChecklistEntryFromDB(id);
       }
     },
+
+    toggleChecklistEntryCompletion(_id: string) {
+      console.log('toggleChecklistEntryCompletion _id', _id);
+      const entry = self.checklistEntries.find(e => e._id === _id);
+      if (entry) {
+        entry.isCompleted = !entry.isCompleted; // Assuming 'completed' is a property of ChecklistEntryType
+        console.log('entry isCompleted', entry);
+        updateChecklistEntryToDB(entry); // Update the entry in the database
+      }
+    },
   }));
 
 const rootStore = RootStore.create({

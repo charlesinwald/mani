@@ -20,7 +20,11 @@ const ChecklistTab = observer(({type, navigation}) => {
       title={item.desc}
       isCompleted={item.isCompleted ? 1 : 0}
       createdAt={item.createdAt}
-      onPress={() => navigateToDetail(item._id)}
+      onPress={() => {
+        console.log('Pressed');
+        navigateToDetail(item._id);
+      }}
+      onToggleCompletion={() => store.toggleChecklistEntryCompletion(item._id)}
     />
   );
 

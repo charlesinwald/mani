@@ -3,5 +3,5 @@ appId: com.charlesinwald.mani
 - launchApp
 - waitForAnimationToEnd
 - tapOn:
-    id: 'Tab.Jump'
-- assertVisible: 'Jump'
+    id: 'Tab.Checklist'
+- assertVisible: 'Checklist'

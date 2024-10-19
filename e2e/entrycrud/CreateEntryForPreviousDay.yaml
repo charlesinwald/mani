@@ -5,9 +5,9 @@ onFlowComplete:
 - launchApp
 - waitForAnimationToEnd
 - tapOn:
-    id: 'Tab.Jump'
+    id: 'Tab.Checklist'
 - tapOn:
-    id: JumpScreen.Calendar.day_2024.07.02
+    id: ChecklistScreen.Calendar.day_2024.07.02
 - extendedWaitUntil:
     visible: 'Tap to Edit'
 - tapOn:
