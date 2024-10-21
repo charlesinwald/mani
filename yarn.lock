@@ -2264,6 +2264,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@react-native-community/checkbox@npm:^0.5.17":
+  version: 0.5.17
+  resolution: "@react-native-community/checkbox@npm:0.5.17"
+  peerDependencies:
+    react: "*"
+    react-native: ">= 0.62"
+    react-native-windows: ">=0.62"
+  peerDependenciesMeta:
+    react-native-windows:
+      optional: true
+  checksum: 98cddff11b976a1f712bfc4d7de946d5e102108bedc016bbcb668b3917757dd5092b5b93f651f740508dd8437ba3a0ce5ca15cef3ebf7bcfc15a490b0b7d0d6b
+  languageName: node
+  linkType: hard
+
 "@react-native-community/cli-clean@npm:13.6.9":
   version: 13.6.9
   resolution: "@react-native-community/cli-clean@npm:13.6.9"
@@ -3453,6 +3467,7 @@ __metadata:
     "@babel/runtime": ^7.20.0
     "@eva-design/eva": ^2.2.0
     "@react-native-async-storage/async-storage": ^1.23.1
+    "@react-native-community/checkbox": ^0.5.17
     "@react-native-community/geolocation": ^3.4.0
     "@react-native-community/masked-view": ^0.1.11
     "@react-native-community/slider": ^4.5.4
@@ -3492,7 +3507,6 @@ __metadata:
     react-native: 0.74.3
     react-native-bootsplash: ^6.1.3
     react-native-calendars: ^1.1305.0
-    react-native-checkbox: ^2.0.0
     react-native-dotenv: ^3.4.11
     react-native-flash-message: ^0.4.2
     react-native-fs: ^2.20.0
@@ -9410,15 +9424,6 @@ __metadata:
     moment:
       optional: true
   checksum: bf50aa57f0e1efd3837319e9f119ebbd85c293be2d21c533850d105992872b2d4f0c1e58c1c4301655fd1b2b1ee9d26f9242c055a7f14ed57baacb1917c86e83
-  languageName: node
-  linkType: hard
-
-"react-native-checkbox@npm:^2.0.0":
-  version: 2.0.0
-  resolution: "react-native-checkbox@npm:2.0.0"
-  dependencies:
-    prop-types: ^15.5.10
-  checksum: b09f2ef292afc3bbfdfc914be5cc7010f82bbf6c4b97206d8e55b3715be14ea2bf564b44eca5a289168e610f1805848944e71fa5c8ee004724498c9093ed1f39
   languageName: node
   linkType: hard
 

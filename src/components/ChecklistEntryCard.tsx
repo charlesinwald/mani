@@ -2,7 +2,7 @@ import React from 'react';
 import {StyleSheet, View, Text, TouchableOpacity} from 'react-native';
 import {Card} from '@ui-kitten/components';
 // @ts-expect-error - no type definitions available
-import CheckBox from 'react-native-checkbox';
+import CheckBox from '@react-native-community/checkbox'; // Updated import
 
 interface ChecklistEntryCardProps {
   desc: string;
@@ -26,6 +26,8 @@ const ChecklistEntryCard: React.FC<ChecklistEntryCardProps> = ({
     day: 'numeric',
   });
 
+  const [isChecked, setIsChecked] = React.useState(isCompleted === 1);
+
   return (
     <TouchableOpacity onPress={() => onPress()} {...props}>
       <Card style={styles.card}>
@@ -39,11 +41,13 @@ const ChecklistEntryCard: React.FC<ChecklistEntryCardProps> = ({
           <View style={styles.progressContainer}>
             {/* Replace the text with a checkbox */}
             <CheckBox
-              value={isCompleted === 1} // Assuming 1 means completed
+              value={isChecked}
               onValueChange={() => {
+                console.log('Checkbox toggled');
                 onToggleCompletion(); // Call the new function to handle the state change
+                setIsChecked(!isChecked); // Update the local state
               }} // Handle checkbox toggle
-              label={''}
+              tintColors={{true: '#3366FF', false: '#8F9BB3'}} // Optional: Customize checkbox colors
             />
           </View>
         </View>
