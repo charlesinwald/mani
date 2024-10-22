@@ -12,8 +12,23 @@ interface ChecklistTabProps {
   navigation: any;
 }
 
+const toCapsObject = {
+  shortterm: 'Short Term',
+  longterm: 'Long Term',
+  lifetime: 'Lifetime',
+};
+
 const ChecklistTab = observer<ChecklistTabProps>(({type, navigation}) => {
   const store = useContext(MSTContext);
+
+  // Ensure 'type' is one of the keys of 'toCapsObject'
+  const validTypes = Object.keys(toCapsObject) as Array<
+    keyof typeof toCapsObject
+  >;
+
+  if (!validTypes.includes(type as keyof typeof toCapsObject)) {
+    throw new Error(`Invalid type: ${type}`);
+  }
 
   // Filter checklist entries based on type
   const filteredData = store.checklistEntries.filter(
@@ -48,7 +63,9 @@ const ChecklistTab = observer<ChecklistTabProps>(({type, navigation}) => {
   return (
     <View style={styles.container}>
       <TouchableOpacity style={styles.addButton} onPress={navigateToAddNew}>
-        <Text style={styles.addButtonText}>Add New {type} Goal</Text>
+        <Text style={styles.addButtonText}>
+          Add New {toCapsObject[type as keyof typeof toCapsObject]} Goal
+        </Text>
       </TouchableOpacity>
       <List
         style={styles.list}

@@ -36,19 +36,19 @@ const ChecklistEntryCard: React.FC<ChecklistEntryCardProps> = ({
             <Text style={styles.title} numberOfLines={1} ellipsizeMode="tail">
               {desc}
             </Text>
-            <Text style={styles.date}>{formattedDate}</Text>
-          </View>
-          <View style={styles.progressContainer}>
-            {/* Replace the text with a checkbox */}
-            <CheckBox
-              value={isChecked}
-              onValueChange={() => {
-                console.log('Checkbox toggled');
-                onToggleCompletion(); // Call the new function to handle the state change
-                setIsChecked(!isChecked); // Update the local state
-              }} // Handle checkbox toggle
-              tintColors={{true: '#3366FF', false: '#8F9BB3'}} // Optional: Customize checkbox colors
-            />
+            <View style={styles.progressContainer}>
+              {/* Replace the text with a checkbox */}
+              <Text style={styles.date}>{formattedDate}</Text>
+              <CheckBox
+                value={isChecked}
+                onValueChange={() => {
+                  console.log('Checkbox toggled');
+                  onToggleCompletion(); // Call the new function to handle the state change
+                  setIsChecked(!isChecked); // Update the local state
+                }} // Handle checkbox toggle
+                tintColors={{true: '#3366FF', false: '#8F9BB3'}} // Optional: Customize checkbox colors
+              />
+            </View>
           </View>
         </View>
         {/* <Icon name="chevron-right" size={24} color="#8F9BB3" /> */}
@@ -82,7 +82,7 @@ const styles = StyleSheet.create({
     color: '#8F9BB3',
   },
   progressContainer: {
-    flexDirection: 'row',
+    flexDirection: 'column',
     alignItems: 'center',
   },
   progressBar: {
