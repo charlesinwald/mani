@@ -17,7 +17,10 @@ import {MSTContext} from '../../mst';
 import {PasswordProps} from '../../navigation/types';
 import {Layout} from '../../components/Layout';
 
-import {verifyPwdWithStoredHash} from '../../utils/password';
+import {
+  verifyPwdWithStoredHash,
+  authenticateWithBiometrics,
+} from '../../utils/password';
 import {RenderProp} from '@ui-kitten/components/devsupport';
 
 const UnlockSchema = Yup.object().shape({
@@ -62,6 +65,30 @@ const Password: React.FC<PasswordProps> = observer(({}) => {
         setRespError('Password is wrong');
       }
     } catch (error) {}
+  };
+
+  const handleBiometricUnlock = async () => {
+    setRespError('');
+    try {
+      const isAuthenticated = await authenticateWithBiometrics();
+      if (isAuthenticated) {
+        showMessage({
+          message: 'Welcome',
+          type: 'info',
+        });
+        store.user.toggleUnlocked(true);
+      } else {
+        showMessage({
+          message: 'Unlock Failed',
+          description: 'Biometric authentication failed',
+          type: 'danger',
+        });
+        setRespError('Biometric authentication failed');
+      }
+    } catch (error) {
+      console.error(error);
+      setRespError('An error occurred during biometric authentication');
+    }
   };
 
   const [secureTextEntry, setSecureTextEntry] = React.useState(true);
@@ -117,7 +144,10 @@ const Password: React.FC<PasswordProps> = observer(({}) => {
                   <Text style={styles.error}>{respError}</Text>
                 ) : null}
                 <Button title="Go" onPress={handleSubmit} />
-                {/* <Button title="Delete Pwd" onPress={deletePassword} /> */}
+                <Button
+                  title="Unlock with Biometrics"
+                  onPress={handleBiometricUnlock}
+                />
               </>
             )}
           </Formik>

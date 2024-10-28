@@ -4,6 +4,9 @@ import {SHA512} from 'crypto-es/lib/sha512';
 import dayjs from 'dayjs';
 
 import {setSecureValue, getSecureValue, removeSecureValue} from './keyChain';
+import RNBiometrics from 'react-native-simple-biometrics';
+
+
 
 /**
  * Store a hashed password in Keychain
@@ -131,5 +134,26 @@ export const updateHash = async (newHash: string, timestamp: string) => {
     return res;
   } catch (error) {
     return error;
+  }
+};
+
+/**
+ * Authenticate user using biometrics
+ */
+export const authenticateWithBiometrics = async () => {
+  const can = await RNBiometrics.canAuthenticate();
+  if (!can) {
+    console.log('Biometrics not available');
+    return false;
+  }
+  try {
+    const result = await RNBiometrics.requestBioAuth(
+      'Please authenticate to unlock',
+      'Please use your biometrics to unlock the app',
+    );
+    console.log(result);
+    return result; // Returns true if authenticated
+  } catch (error) {
+    return false; // Authentication failed
   }
 };
