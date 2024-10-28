@@ -175,22 +175,28 @@ const RootStore = types
     toggleThinkAboutIt(id: string) {
       const entry = self.checklistEntries.find(e => e._id === id);
       if (entry) {
-        entry.thinkAboutIt = !entry.thinkAboutIt; // Toggle the property
-        entry.modifiedAt = dayjs().valueOf(); // Update modifiedAt
+        const newEntry = entry;
+        newEntry.thinkAboutIt = !entry.thinkAboutIt; // Toggle the property
+        newEntry.modifiedAt = dayjs().valueOf(); // Update modifiedAt
+        updateChecklistEntryToDB(newEntry);
       }
     },
     toggleTalkAboutIt(id: string) {
       const entry = self.checklistEntries.find(e => e._id === id);
       if (entry) {
-        entry.talkAboutIt = !entry.talkAboutIt; // Toggle the property
-        entry.modifiedAt = dayjs().valueOf(); // Update modifiedAt
+        const newEntry = entry;
+        newEntry.talkAboutIt = !entry.talkAboutIt; // Toggle the property
+        newEntry.modifiedAt = dayjs().valueOf(); // Update modifiedAt
+        updateChecklistEntryToDB(newEntry);
       }
     },
     toggleActOnIt(id: string) {
       const entry = self.checklistEntries.find(e => e._id === id);
       if (entry) {
-        entry.actOnIt = !entry.actOnIt; // Toggle the property
-        entry.modifiedAt = dayjs().valueOf(); // Update modifiedAt
+        const newEntry = entry;
+        newEntry.actOnIt = !entry.actOnIt; // Toggle the property
+        newEntry.modifiedAt = dayjs().valueOf(); // Update modifiedAt
+        updateChecklistEntryToDB(newEntry);
       }
     },
   }));

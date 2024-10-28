@@ -178,9 +178,9 @@ const addChecklistEntryToDB = async (
       _id: uuidv4(),
       desc: item.desc,
       type: item.type,
-      thinkAboutIt: false, // Initialize new property
-      talkAboutIt: false, // Initialize new property
-      actOnIt: false, // Initialize new property
+      thinkAboutIt: item.thinkAboutIt, // Initialize new property
+      talkAboutIt: item.talkAboutIt, // Initialize new property
+      actOnIt: item.actOnIt, // Initialize new property
       createdAt: dayjs(new Date()).valueOf(),
       modifiedAt: dayjs(new Date()).valueOf(),
     });
