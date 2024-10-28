@@ -11,7 +11,9 @@ const ChecklistEntryModel = types
       'longterm',
       'Lifetime',
     ]),
-    isCompleted: types.boolean,
+    thinkAboutIt: types.boolean,
+    talkAboutIt: types.boolean,
+    actOnIt: types.boolean,
     createdAt: types.number,
     modifiedAt: types.number,
   })
@@ -24,8 +26,16 @@ const ChecklistEntryModel = types
       self.type = type;
       self.modifiedAt = dayjs().valueOf();
     },
-    toggleCompleted() {
-      self.isCompleted = !self.isCompleted;
+    toggleThinkAboutIt() {
+      self.thinkAboutIt = !self.thinkAboutIt;
+      self.modifiedAt = dayjs().valueOf();
+    },
+    toggleTalkAboutIt() {
+      self.talkAboutIt = !self.talkAboutIt;
+      self.modifiedAt = dayjs().valueOf();
+    },
+    toggleActOnIt() {
+      self.actOnIt = !self.actOnIt;
       self.modifiedAt = dayjs().valueOf();
     },
   }))
@@ -51,7 +61,9 @@ export const createChecklistEntryModel = (
     _id: snapshot?._id ?? uuidv4(),
     desc: snapshot?.desc ?? '',
     type: snapshot?.type ?? 'shortterm',
-    isCompleted: snapshot?.isCompleted ?? false,
+    thinkAboutIt: snapshot?.thinkAboutIt ?? false,
+    talkAboutIt: snapshot?.talkAboutIt ?? false,
+    actOnIt: snapshot?.actOnIt ?? false,
     createdAt: snapshot?.createdAt ?? dayjs().valueOf(),
     modifiedAt: snapshot?.modifiedAt ?? dayjs().valueOf(),
   };

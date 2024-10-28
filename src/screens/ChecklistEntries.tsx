@@ -13,6 +13,7 @@ import {TouchableOpacity} from 'react-native-gesture-handler';
 const ChecklistEntries: React.FC<ChecklistEntriesProps> = observer(
   ({navigation}) => {
     const store = useContext(MSTContext);
+    console.log(JSON.stringify(store.checklistEntries));
     const [currentTab, setCurrentTab] = useState(0);
     const tabs = ['Short Term', 'Long Term', 'Lifetime'];
 

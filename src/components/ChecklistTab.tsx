@@ -1,4 +1,4 @@
-import React, {useContext} from 'react';
+import React, {useContext, useState} from 'react';
 import {StyleSheet, View, TouchableOpacity, Text} from 'react-native';
 import {List} from '@ui-kitten/components';
 import {observer} from 'mobx-react-lite';
@@ -20,6 +20,7 @@ const toCapsObject = {
 
 const ChecklistTab = observer<ChecklistTabProps>(({type, navigation}) => {
   const store = useContext(MSTContext);
+  const [_, setDummyState] = useState(0);
 
   // Ensure 'type' is one of the keys of 'toCapsObject'
   const validTypes = Object.keys(toCapsObject) as Array<
@@ -35,18 +36,32 @@ const ChecklistTab = observer<ChecklistTabProps>(({type, navigation}) => {
     item => item.type === type,
   );
 
+
   const renderItem = (item: ChecklistEntryType) => (
     <ChecklistEntryCard
       desc={item.desc}
-      isCompleted={item.isCompleted ? 1 : 0}
+      thinkAboutIt={item.thinkAboutIt}
+      talkAboutIt={item.talkAboutIt}
+      actOnIt={item.actOnIt}
       createdAt={item.createdAt}
       onPress={() => {
         console.log('Pressed');
         navigateToDetail(item._id);
       }}
-      onToggleCompletion={() => {
-        console.log('Toggled');
-        store.toggleChecklistEntryCompletion(item._id);
+      onToggleThinkAboutIt={() => {
+        console.log('Toggled Think About It');
+        store.toggleThinkAboutIt(item._id);
+        triggerRerender();
+      }}
+      onToggleTalkAboutIt={() => {
+        console.log('Toggled Talk About It');
+        store.toggleTalkAboutIt(item._id);
+        triggerRerender();
+      }}
+      onToggleActOnIt={() => {
+        console.log('Toggled Act On It');
+        store.toggleActOnIt(item._id);
+        triggerRerender();
       }}
       key={item._id}
     />
@@ -58,6 +73,11 @@ const ChecklistTab = observer<ChecklistTabProps>(({type, navigation}) => {
 
   const navigateToAddNew = () => {
     navigation.navigate('ChecklistEntrySingle', {type});
+  };
+
+  // Call this function to trigger a re-render
+  const triggerRerender = () => {
+    setDummyState(prev => prev + 1);
   };
 
   return (

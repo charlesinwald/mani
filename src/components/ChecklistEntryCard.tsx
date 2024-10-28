@@ -1,24 +1,30 @@
 import React from 'react';
 import {StyleSheet, View, Text, TouchableOpacity} from 'react-native';
 import {Card} from '@ui-kitten/components';
-// @ts-expect-error - no type definitions available
-import CheckBox from '@react-native-community/checkbox'; // Updated import
+import CheckBox from '@react-native-community/checkbox';
 
 interface ChecklistEntryCardProps {
   desc: string;
   createdAt: number;
-  isCompleted: number;
+  thinkAboutIt: boolean; // Change to boolean
+  talkAboutIt: boolean; // Change to boolean
+  actOnIt: boolean; // Change to boolean
   onPress: () => void;
-  onToggleCompletion: () => void; // New prop for toggling completion
+  onToggleThinkAboutIt: () => void;
+  onToggleTalkAboutIt: () => void;
+  onToggleActOnIt: () => void;
 }
 
 const ChecklistEntryCard: React.FC<ChecklistEntryCardProps> = ({
   desc,
-  isCompleted,
+  thinkAboutIt,
+  talkAboutIt,
+  actOnIt,
   onPress,
   createdAt,
-  onToggleCompletion,
-  ...props
+  onToggleThinkAboutIt,
+  onToggleTalkAboutIt,
+  onToggleActOnIt,
 }) => {
   const formattedDate = new Date(createdAt).toLocaleDateString('en-US', {
     year: 'numeric',
@@ -26,10 +32,8 @@ const ChecklistEntryCard: React.FC<ChecklistEntryCardProps> = ({
     day: 'numeric',
   });
 
-  const [isChecked, setIsChecked] = React.useState(isCompleted === 1);
-
   return (
-    <TouchableOpacity onPress={() => onPress()} {...props}>
+    <TouchableOpacity onPress={onPress}>
       <Card style={styles.card}>
         <View style={styles.cardContent}>
           <View style={styles.titleContainer}>
@@ -37,21 +41,37 @@ const ChecklistEntryCard: React.FC<ChecklistEntryCardProps> = ({
               {desc}
             </Text>
             <View style={styles.progressContainer}>
-              {/* Replace the text with a checkbox */}
               <Text style={styles.date}>{formattedDate}</Text>
-              <CheckBox
-                value={isChecked}
-                onValueChange={() => {
-                  console.log('Checkbox toggled');
-                  onToggleCompletion(); // Call the new function to handle the state change
-                  setIsChecked(!isChecked); // Update the local state
-                }} // Handle checkbox toggle
-                tintColors={{true: '#3366FF', false: '#8F9BB3'}} // Optional: Customize checkbox colors
-              />
+              <View style={styles.checkboxContainer}>
+                <Text style={styles.checkboxLabel}>Think about it</Text>
+                <CheckBox
+                  style={styles.checkbox}
+                  value={thinkAboutIt} // Use boolean directly
+                  onValueChange={onToggleThinkAboutIt}
+                  tintColors={{true: '#3366FF', false: '#8F9BB3'}}
+                />
+              </View>
+              <View style={styles.checkboxContainer}>
+                <Text style={styles.checkboxLabel}>Talk about it</Text>
+                <CheckBox
+                  style={styles.checkbox}
+                  value={talkAboutIt} // Use boolean directly
+                  onValueChange={onToggleTalkAboutIt}
+                  tintColors={{true: '#3366FF', false: '#8F9BB3'}}
+                />
+              </View>
+              <View style={styles.checkboxContainer}>
+                <Text style={styles.checkboxLabel}>Act on it</Text>
+                <CheckBox
+                  style={styles.checkbox}
+                  value={actOnIt} // Use boolean directly
+                  onValueChange={onToggleActOnIt}
+                  tintColors={{true: '#3366FF', false: '#8F9BB3'}}
+                />
+              </View>
             </View>
           </View>
         </View>
-        {/* <Icon name="chevron-right" size={24} color="#8F9BB3" /> */}
       </Card>
     </TouchableOpacity>
   );
@@ -83,25 +103,16 @@ const styles = StyleSheet.create({
   },
   progressContainer: {
     flexDirection: 'column',
+    alignItems: 'flex-end',
+  },
+  checkboxContainer: {
+    flexDirection: 'row',
     alignItems: 'center',
+    // justifyContent: 'center',
   },
-  progressBar: {
-    flex: 1,
-    height: 6,
-    backgroundColor: '#E4E9F2',
-    borderRadius: 3,
-    marginRight: 8,
-  },
-  progressFill: {
-    height: '100%',
-    backgroundColor: '#3366FF',
-    borderRadius: 3,
-  },
-  progressText: {
-    fontSize: 12,
-    color: '#8F9BB3',
-    minWidth: 40,
-    textAlign: 'right',
+  checkboxLabel: {},
+  checkbox: {
+    alignSelf: 'flex-end',
   },
 });
 

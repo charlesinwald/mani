@@ -17,9 +17,6 @@ import {Layout} from '../components/Layout';
 import useProperNouns from '../components/useProperNouns';
 import {Picker} from '@react-native-picker/picker';
 
-// Add this type definition near the top of your file
-type GoalType = 'shortterm' | 'longterm' | 'lifetime';
-
 const initialText = '';
 
 const ChecklistEntrySingle: React.FC<ChecklistEntrySingleProps> = observer(
@@ -28,8 +25,11 @@ const ChecklistEntrySingle: React.FC<ChecklistEntrySingleProps> = observer(
     const [inputData, setInputData] = useState(initialText);
     const [active, setActive] = useState<any>(null);
     const [editable, setEditable] = useState(false);
-    const [goalType, setGoalType] = useState<GoalType>(
-      (route.params?.type as GoalType) || 'shortterm',
+    const [goalType, setGoalType] = useState<
+      'shortterm' | 'longterm' | 'lifetime'
+    >(
+      (route.params?.type as 'shortterm' | 'longterm' | 'lifetime') ||
+        'shortterm',
     );
 
     const properNouns = useProperNouns(inputData);
@@ -40,26 +40,27 @@ const ChecklistEntrySingle: React.FC<ChecklistEntrySingleProps> = observer(
         const isNewEntry = route.params?.newEntry;
 
         if (isNewEntry) {
-          // Handle new entry
           const newEntry = {
             date: dayjs().format('YYYY-MM-DD'),
             desc: '',
             createdAt: dayjs().valueOf(),
             modifiedAt: '',
             type: goalType,
+            thinkAboutIt: false, // Initialize new property
+            talkAboutIt: false, // Initialize new property
+            actOnIt: false, // Initialize new property
             isCompleted: false,
           };
           setActive(newEntry);
           setInputData('');
         } else if (entryId) {
-          // Handle existing entry
           const existingEntry = store.checklistEntries.find(
             e => e._id === entryId,
           );
           if (existingEntry) {
             setActive(existingEntry);
             setInputData(existingEntry.desc);
-            setGoalType(existingEntry.type as GoalType);
+            setGoalType(existingEntry.type);
           }
         }
       });
@@ -99,13 +100,15 @@ const ChecklistEntrySingle: React.FC<ChecklistEntrySingleProps> = observer(
         const entryData = {
           type: goalType,
           desc: inputData,
+          thinkAboutIt: active?.thinkAboutIt || false, // Use existing or default
+          talkAboutIt: active?.talkAboutIt || false, // Use existing or default
+          actOnIt: active?.actOnIt || false, // Use existing or default
           isCompleted: false,
           createdAt: dayjs().valueOf(),
           modifiedAt: dayjs().valueOf(),
         };
 
         if (!active) {
-          // Ensure all required fields are provided
           store.addChecklistEntry(entryData);
         } else {
           store.updateChecklistEntry({
@@ -115,6 +118,9 @@ const ChecklistEntrySingle: React.FC<ChecklistEntrySingleProps> = observer(
             createdAt: active.createdAt,
             desc: inputData,
             modifiedAt: dayjs(new Date()).valueOf(),
+            thinkAboutIt: active.thinkAboutIt,
+            talkAboutIt: active.talkAboutIt,
+            actOnIt: active.actOnIt,
           });
         }
       } else {
@@ -123,8 +129,28 @@ const ChecklistEntrySingle: React.FC<ChecklistEntrySingleProps> = observer(
 
       setInputData(initialText);
       setActive(null);
-      // Navigate back to the ChecklistEntries tab
       navigation.navigate('ChecklistEntries');
+    };
+
+    const toggleThinkAboutIt = () => {
+      if (active) {
+        store.toggleThinkAboutIt(active._id);
+        setActive({...active, thinkAboutIt: !active.thinkAboutIt});
+      }
+    };
+
+    const toggleTalkAboutIt = () => {
+      if (active) {
+        store.toggleTalkAboutIt(active._id);
+        setActive({...active, talkAboutIt: !active.talkAboutIt});
+      }
+    };
+
+    const toggleActOnIt = () => {
+      if (active) {
+        store.toggleActOnIt(active._id);
+        setActive({...active, actOnIt: !active.actOnIt});
+      }
     };
 
     return (
@@ -172,6 +198,24 @@ const ChecklistEntrySingle: React.FC<ChecklistEntrySingleProps> = observer(
                 </Button>
               </View>
               <View style={styles.container}>
+                <Text style={styles.result}>Actions:</Text>
+                <TouchableOpacity onPress={toggleThinkAboutIt}>
+                  <Text style={styles.actionText}>
+                    {active?.thinkAboutIt
+                      ? '✓ Think About It'
+                      : 'Think About It'}
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={toggleTalkAboutIt}>
+                  <Text style={styles.actionText}>
+                    {active?.talkAboutIt ? '✓ Talk About It' : 'Talk About It'}
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={toggleActOnIt}>
+                  <Text style={styles.actionText}>
+                    {active?.actOnIt ? '✓ Act On It' : 'Act On It'}
+                  </Text>
+                </TouchableOpacity>
                 {properNouns.length > 0 ? (
                   <View>
                     <Text style={styles.result}>Detected Names:</Text>
@@ -255,6 +299,10 @@ const styles = StyleSheet.create({
     marginTop: 12,
     fontSize: 18,
     fontWeight: 'bold',
+  },
+  actionText: {
+    fontSize: 16,
+    marginTop: 4,
   },
   entity: {
     fontSize: 16,

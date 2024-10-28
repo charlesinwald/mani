@@ -147,6 +147,9 @@ const RootStore = types
         createdAt: dayjs().valueOf(),
         modifiedAt: dayjs().valueOf(),
         type: entry.type || 'shortterm', // Provide default value if type is undefined
+        thinkAboutIt: false,
+        talkAboutIt: false,
+        actOnIt: false,
       });
       console.log('newEntry', newEntry);
       self.checklistEntries.push(newEntry);
@@ -169,13 +172,25 @@ const RootStore = types
       }
     },
 
-    toggleChecklistEntryCompletion(_id: string) {
-      console.log('toggleChecklistEntryCompletion _id', _id);
-      const entry = self.checklistEntries.find(e => e._id === _id);
+    toggleThinkAboutIt(id: string) {
+      const entry = self.checklistEntries.find(e => e._id === id);
       if (entry) {
-        entry.isCompleted = !entry.isCompleted; // Assuming 'completed' is a property of ChecklistEntryType
-        console.log('entry isCompleted', entry);
-        updateChecklistEntryToDB(entry); // Update the entry in the database
+        entry.thinkAboutIt = !entry.thinkAboutIt; // Toggle the property
+        entry.modifiedAt = dayjs().valueOf(); // Update modifiedAt
+      }
+    },
+    toggleTalkAboutIt(id: string) {
+      const entry = self.checklistEntries.find(e => e._id === id);
+      if (entry) {
+        entry.talkAboutIt = !entry.talkAboutIt; // Toggle the property
+        entry.modifiedAt = dayjs().valueOf(); // Update modifiedAt
+      }
+    },
+    toggleActOnIt(id: string) {
+      const entry = self.checklistEntries.find(e => e._id === id);
+      if (entry) {
+        entry.actOnIt = !entry.actOnIt; // Toggle the property
+        entry.modifiedAt = dayjs().valueOf(); // Update modifiedAt
       }
     },
   }));

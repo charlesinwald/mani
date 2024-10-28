@@ -63,7 +63,9 @@ class User extends Realm.Object {
 class ChecklistEntry extends Realm.Object {
   _id!: string;
   desc: string = '';
-  isCompleted: boolean = false;
+  thinkAboutIt: boolean = false; // New property
+  talkAboutIt: boolean = false; // New property
+  actOnIt: boolean = false; // New property
   createdAt: number | undefined;
   modifiedAt: number | undefined;
   deleted: boolean = false;
@@ -74,7 +76,9 @@ class ChecklistEntry extends Realm.Object {
     properties: {
       _id: 'string',
       desc: 'string',
-      isCompleted: {type: 'bool', default: false},
+      thinkAboutIt: {type: 'bool', default: false}, // New property
+      talkAboutIt: {type: 'bool', default: false}, // New property
+      actOnIt: {type: 'bool', default: false}, // New property
       createdAt: 'int',
       modifiedAt: 'int',
       deleted: {type: 'bool', default: false},
