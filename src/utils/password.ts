@@ -151,7 +151,6 @@ export const authenticateWithBiometrics = async () => {
       'Please authenticate to unlock',
       'Please use your biometrics to unlock the app',
     );
-    console.log(result);
     return result; // Returns true if authenticated
   } catch (error) {
     return false; // Authentication failed
