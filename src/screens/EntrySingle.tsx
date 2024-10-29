@@ -33,6 +33,7 @@ const EntrySingle: React.FC<EntrySingleProps> = observer(
   ({route, navigation}) => {
     const store = useContext(MSTContext);
     console.log('store', JSON.stringify(store.entries, null, 2));
+    console.log('memoir store', JSON.stringify(store.memoirEntries, null, 2));
     const [inputData, setInputData] = useState(initialText);
     const [active, setActive] = useState<any>(null);
     // console.log('active', active);
@@ -48,6 +49,9 @@ const EntrySingle: React.FC<EntrySingleProps> = observer(
     const [goalType, setGoalType] = useState('Short Term'); // Add state for goal type
 
     const properNouns = useProperNouns(inputData);
+
+    const isMemoir = route.params?.memoir;
+    console.log('isMemoir', isMemoir);
 
     useEffect(() => {
       const fetchLocation = async () => {
@@ -195,34 +199,65 @@ const EntrySingle: React.FC<EntrySingleProps> = observer(
     const addEntry = () => {
       console.log('Saving entry:', active ? active._id : 'new entry');
       console.log('saving Mood:', selectedMood);
+      const isNewEntry = route.params?.newEntry;
       if (inputData.trim() !== '') {
-        if (!active) {
-          store.addEntry({
-            _id: uuidv4(),
-            //type: goalType, // Use selected goal type
-            date: dayjs(new Date()).format('YYYY-MM-DD'),
-            desc: inputData,
-            createdAt: dayjs(new Date()).valueOf(),
-            modifiedAt: dayjs(new Date()).valueOf(),
-            mood: selectedMood, // Add mood to the entry
-            latitude: location?.latitude || 0,
-            longitude: location?.longitude || 0,
-            weather: weather, // Add weather to the entry
-            temperature: temperature, // Add temperature to the entry
-          });
+        if (isNewEntry) {
+          if (isMemoir) {
+            console.log('Adding memoir entry');
+            store.addMemoirEntry({
+              _id: uuidv4(),
+              date: dayjs(new Date()).format('YYYY-MM-DD'),
+              desc: inputData,
+              createdAt: dayjs(new Date()).valueOf(),
+              modifiedAt: dayjs(new Date()).valueOf(),
+              mood: selectedMood,
+              latitude: location?.latitude || 0,
+              longitude: location?.longitude || 0,
+              weather: weather,
+              temperature: temperature,
+            });
+          } else {
+            store.addEntry({
+              _id: uuidv4(),
+              date: dayjs(new Date()).format('YYYY-MM-DD'),
+              desc: inputData,
+              createdAt: dayjs(new Date()).valueOf(),
+              modifiedAt: dayjs(new Date()).valueOf(),
+              mood: selectedMood,
+              latitude: location?.latitude || 0,
+              longitude: location?.longitude || 0,
+              weather: weather,
+              temperature: temperature,
+            });
+          }
         } else {
-          store.updateEntry({
-            ...active,
-            _id: active._id,
-            date: active.date,
-            type: active.type,
-            createdAt: active.createdAt,
-            desc: inputData,
-            modifiedAt: dayjs(new Date()).valueOf(),
-            mood: selectedMood, // Update mood in the entry
-            weather: active.weather, // Keep existing weather
-            temperature: active.temperature, // Keep existing temperature
-          });
+          if (isMemoir) {
+            console.log('Updating memoir entry');
+            store.updateMemoirEntry({
+              ...active,
+              _id: active._id,
+              date: active.date,
+              desc: inputData,
+              createdAt: active.createdAt,
+              modifiedAt: dayjs(new Date()).valueOf(),
+              mood: selectedMood,
+              weather: active.weather,
+              temperature: active.temperature,
+            });
+          } else {
+            store.updateEntry({
+              ...active,
+              _id: active._id,
+              date: active.date,
+              type: active.type,
+              createdAt: active.createdAt,
+              desc: inputData,
+              modifiedAt: dayjs(new Date()).valueOf(),
+              mood: selectedMood,
+              weather: active.weather,
+              temperature: active.temperature,
+            });
+          }
         }
       }
 

@@ -7,7 +7,9 @@ import {
   DiaryEntryDBType,
   DiaryEntryOut,
 } from '../types/DiaryEntry';
+import {MemoirEntryIn, MemoirEntryOut} from '../types/MemoirEntry';
 import {ChecklistEntryType} from '../types/ChecklistEntry';
+import MemoirEntryModel from './MemoirEntry';
 // Stores
 import DiaryEntry from './DiaryEntry';
 import User from './User';
@@ -24,17 +26,29 @@ import {
   addChecklistEntryToDB,
   updateChecklistEntryToDB,
   deleteChecklistEntryFromDB,
+  readMemoirEntriesFromDB,
+  addMemoirEntryToDB,
+  updateMemoirEntryToDB,
+  deleteOneMemoirEntryFromDB,
 } from '../db/entry';
+import {MemoirEntryType} from '../types/MemoirEntry';
 
 const RootStore = types
   .model({
     entries: types.array(DiaryEntry),
     checklistEntries: types.array(ChecklistEntryModel),
+    memoirEntries: types.array(MemoirEntryModel),
     user: User,
   })
   .views(self => ({
     getData() {
       return self.entries.sort(
+        (a, b) => new Date(b.date).valueOf() - new Date(a.date).valueOf(),
+      );
+    },
+
+    getMemoirEntries() {
+      return self.memoirEntries.sort(
         (a, b) => new Date(b.date).valueOf() - new Date(a.date).valueOf(),
       );
     },
@@ -93,6 +107,12 @@ const RootStore = types
         item => item !== undefined,
       );
       self.checklistEntries = checklistItemsFromDB;
+
+      // Populate memoir entries
+      let memoirItemsFromDB = readMemoirEntriesFromDB().filter(
+        item => item !== undefined,
+      );
+      self.memoirEntries = memoirItemsFromDB;
     },
 
     addEntry(entry: DiaryEntryIn) {
@@ -133,6 +153,37 @@ const RootStore = types
         const entryWithDeleted = {...entryToDelete, deleted: true};
         softDeleteOneEntryFromDB(entryWithDeleted);
         destroy(entryToDelete);
+      }
+    },
+
+    // Memoir Entry actions
+    addMemoirEntry(entry: MemoirEntryIn) {
+      console.log('addMemoirEntry', entry);
+      const newEntry = MemoirEntryModel.create({
+        _id: uuidv4(),
+        createdAt: dayjs().valueOf(),
+        modifiedAt: dayjs().valueOf(),
+        ...entry,
+        desc: (entry as {desc?: string}).desc || '', // Ensure desc is provided with a default value
+      });
+      self.memoirEntries.push(newEntry);
+      addMemoirEntryToDB(newEntry);
+    },
+
+    updateMemoirEntry(entry: MemoirEntryType) {
+      const index = self.memoirEntries.findIndex(e => e._id === entry._id);
+      if (index !== -1) {
+        self.memoirEntries[index] = MemoirEntryModel.create(entry);
+        console.log('updateMemoirEntry', entry);
+        updateMemoirEntryToDB(entry);
+      }
+    },
+
+    deleteMemoirEntry(id: string) {
+      const entryToDelete = self.memoirEntries.find(e => e._id === id);
+      if (entryToDelete) {
+        destroy(entryToDelete);
+        deleteOneMemoirEntryFromDB(id);
       }
     },
 
@@ -204,6 +255,7 @@ const RootStore = types
 const rootStore = RootStore.create({
   entries: [],
   checklistEntries: [],
+  memoirEntries: [],
   user: {
     _id: '',
     name: '',
@@ -217,6 +269,8 @@ const rootStore = RootStore.create({
 });
 
 export default rootStore;
-export interface RootStoreType extends Instance<typeof RootStore> {}
+export interface RootStoreType extends Instance<typeof RootStore> {
+  memoirEntries: any;
+}
 
 export const MSTContext = React.createContext<RootStoreType>(rootStore);

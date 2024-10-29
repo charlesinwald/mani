@@ -26,7 +26,7 @@ import {RenderProp} from '@ui-kitten/components/devsupport';
 const UnlockSchema = Yup.object().shape({
   password: Yup.string()
     .trim('Password cannot include spaces')
-    .min(5, 'Too Short!')
+    // .min(5, 'Too Short!')
     .required(''),
 });
 

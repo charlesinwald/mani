@@ -17,7 +17,7 @@ import {getPasswordStatus} from '../utils/password';
 import Password from '../screens/security/Password';
 
 // Tab
-import Entries from '../screens/Entries';
+import DiaryEntries from '../screens/Entries';
 import Checklist from '../screens/Checklist';
 import Settings from '../screens/Settings';
 import EntrySingle from '../screens/EntrySingle';
@@ -166,7 +166,7 @@ const AppNavigation = observer(() => {
           }}>
           <Tab.Screen
             name="Entries"
-            component={Entries}
+            component={DiaryEntries}
             options={{
               tabBarTestID: 'Tab.Entries',
               tabBarLabel: 'Home',

@@ -5,6 +5,8 @@ import rootStore from '../mst';
 import {DiaryEntryOut, DiaryEntryDBType} from '../types/DiaryEntry';
 import {DataFromFile} from '../utils/GoogleDrive';
 import {ChecklistEntryType} from '../types/ChecklistEntry';
+import {MemoirEntryType} from '../types/MemoirEntry';
+
 // Read All
 const readEntriesFromDB = (): DiaryEntryDBType[] => {
   const entries = realm.objects('Entry').sorted('date', true);
@@ -220,6 +222,96 @@ const deleteChecklistEntryFromDB = (id: string) => {
   }
 };
 
+// Read All Memoir Entries
+const readMemoirEntriesFromDB = (): MemoirEntryType[] => {
+  const entries = realm.objects('MemoirEntry').sorted('date', true);
+  return JSON.parse(JSON.stringify(entries));
+};
+
+// Add Memoir Entry
+const addMemoirEntryToDB = async (item: MemoirEntryType) => {
+  const entries = realm.objects<MemoirEntryType>('MemoirEntry');
+  const res = entries.filtered('date == $0', item.date);
+
+  console.log('addMemoirEntryToDB', item);
+
+  if (res.length) {
+    return;
+  }
+
+  realm.write(() => {
+    realm.create<MemoirEntryType>('MemoirEntry', {
+      _id: item._id,
+      date: item.date,
+      desc: item.desc,
+      createdAt: item.createdAt,
+      modifiedAt: item.modifiedAt,
+      mood: item.mood,
+      latitude: item?.latitude,
+      longitude: item?.longitude,
+      weather: item?.weather,
+      temperature: item?.temperature,
+    });
+  });
+};
+
+// Update Memoir Entry
+const updateMemoirEntryToDB = async (item: MemoirEntryType) => {
+  const entries = realm.objects<MemoirEntryType>('MemoirEntry');
+  const res = entries.filtered('date == $0', item.date);
+
+  if (res.length) {
+    realm.write(() => {
+      res[0].desc = item.desc;
+      res[0].mood = item.mood;
+      res[0].modifiedAt = dayjs(new Date()).valueOf();
+      res[0].deleted = false;
+      res[0].latitude = item?.latitude;
+      res[0].longitude = item?.longitude;
+      res[0].weather = item?.weather;
+      res[0].temperature = item?.temperature;
+    });
+  } else {
+    realm.write(() => {
+      realm.create<MemoirEntryType>('MemoirEntry', {
+        ...item,
+        _id: uuidv4(),
+        createdAt: dayjs(new Date()).valueOf(),
+        modifiedAt: dayjs(new Date()).valueOf(),
+      });
+    });
+  }
+};
+
+// Delete Memoir Entry (Soft)
+const softDeleteOneMemoirEntryFromDB = (item: MemoirEntryType) => {
+  const res = realm.objectForPrimaryKey('MemoirEntry', item._id);
+  if (res) {
+    realm.write(() => {
+      // @ts-ignore
+      res.deleted = true;
+      // @ts-ignore
+      res.modifiedAt = dayjs(new Date()).valueOf();
+    });
+  }
+};
+
+// Delete Memoir Entry (Hard)
+const deleteOneMemoirEntryFromDB = (item: MemoirEntryType) => {
+  const resItem = realm.objectForPrimaryKey('MemoirEntry', item._id);
+  realm.write(() => {
+    realm.delete(resItem);
+  });
+};
+
+// Delete All Memoir Entries
+const deleteAllMemoirEntriesFromDB = () => {
+  realm.write(() => {
+    // Delete all objects from the realm.
+    realm.delete(realm.objects('MemoirEntry'));
+  });
+};
+
 export {
   readEntriesFromDB,
   findEntryById,
@@ -234,4 +326,10 @@ export {
   addChecklistEntryToDB,
   updateChecklistEntryToDB,
   deleteChecklistEntryFromDB,
+  readMemoirEntriesFromDB,
+  addMemoirEntryToDB,
+  updateMemoirEntryToDB,
+  softDeleteOneMemoirEntryFromDB,
+  deleteOneMemoirEntryFromDB,
+  deleteAllMemoirEntriesFromDB,
 };

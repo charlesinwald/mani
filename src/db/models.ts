@@ -88,4 +88,24 @@ class ChecklistEntry extends Realm.Object {
   };
 }
 
-export {Entry, User, ChecklistEntry};
+class MemoirEntry extends Realm.Object {
+  _id!: string;
+  date: number = 0; // Assuming date is stored as a timestamp
+  desc: string = '';
+  createdAt: number | undefined;
+  modifiedAt: number | undefined;
+
+  static schema: Realm.ObjectSchema = {
+    name: 'MemoirEntry',
+    properties: {
+      _id: 'string',
+      date: 'int', // Assuming date is stored as an integer (timestamp)
+      desc: 'string',
+      createdAt: 'int?',
+      modifiedAt: 'int?',
+    },
+    primaryKey: '_id',
+  };
+}
+
+export {Entry, User, ChecklistEntry, MemoirEntry};
