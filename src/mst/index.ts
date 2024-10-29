@@ -160,9 +160,6 @@ const RootStore = types
     addMemoirEntry(entry: MemoirEntryIn) {
       console.log('addMemoirEntry', entry);
       const newEntry = MemoirEntryModel.create({
-        _id: uuidv4(),
-        createdAt: dayjs().valueOf(),
-        modifiedAt: dayjs().valueOf(),
         ...entry,
         desc: (entry as {desc?: string}).desc || '', // Ensure desc is provided with a default value
       });

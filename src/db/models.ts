@@ -90,7 +90,7 @@ class ChecklistEntry extends Realm.Object {
 
 class MemoirEntry extends Realm.Object {
   _id!: string;
-  date: number = 0; // Assuming date is stored as a timestamp
+  date: string = ''; // Assuming date is stored as a timestamp
   desc: string = '';
   createdAt: number | undefined;
   modifiedAt: number | undefined;
@@ -99,7 +99,7 @@ class MemoirEntry extends Realm.Object {
     name: 'MemoirEntry',
     properties: {
       _id: 'string',
-      date: 'int', // Assuming date is stored as an integer (timestamp)
+      date: 'string', // Assuming date is stored as an integer (timestamp)
       desc: 'string',
       createdAt: 'int?',
       modifiedAt: 'int?',

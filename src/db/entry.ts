@@ -230,29 +230,25 @@ const readMemoirEntriesFromDB = (): MemoirEntryType[] => {
 
 // Add Memoir Entry
 const addMemoirEntryToDB = async (item: MemoirEntryType) => {
-  const entries = realm.objects<MemoirEntryType>('MemoirEntry');
-  const res = entries.filtered('date == $0', item.date);
-
   console.log('addMemoirEntryToDB', item);
-
-  if (res.length) {
-    return;
-  }
-
-  realm.write(() => {
-    realm.create<MemoirEntryType>('MemoirEntry', {
-      _id: item._id,
-      date: item.date,
-      desc: item.desc,
-      createdAt: item.createdAt,
-      modifiedAt: item.modifiedAt,
-      mood: item.mood,
-      latitude: item?.latitude,
-      longitude: item?.longitude,
-      weather: item?.weather,
-      temperature: item?.temperature,
+  try {
+    realm.write(() => {
+      realm.create<MemoirEntryType>('MemoirEntry', {
+        _id: item._id,
+        date: item.date,
+        desc: item.desc,
+        createdAt: item.createdAt,
+        modifiedAt: item.modifiedAt,
+        mood: item.mood,
+        latitude: item?.latitude,
+        longitude: item?.longitude,
+        weather: item?.weather,
+        temperature: item?.temperature,
+      });
     });
-  });
+  } catch (error) {
+    console.log('error', error);
+  }
 };
 
 // Update Memoir Entry
