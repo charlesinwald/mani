@@ -135,7 +135,9 @@ const EntrySingle: React.FC<EntrySingleProps> = observer(
         } else {
           // Handle existing entry
           console.log('else if entryid', store.entries);
-          const existingEntry = store.entries.find(e => e._id === entryId);
+          const existingEntry = isMemoir
+            ? store.memoirEntries.find(e => e._id === entryId)
+            : store.entries.find(e => e._id === entryId);
           console.log('existingEntry', existingEntry);
           if (existingEntry) {
             setActive(existingEntry);

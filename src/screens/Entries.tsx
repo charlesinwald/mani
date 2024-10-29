@@ -12,7 +12,6 @@ import {Layout} from '../components/Layout';
 import EntryCard from '../components/EntryCard';
 import NoData from '../components/NoData';
 import Search from '../components/Search';
-import MemoirEntryModel from '../mst/MemoirEntry';
 import {PermissionsAndroid} from 'react-native';
 import GestureRecognizer from 'react-native-swipe-gestures';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs'; // Use Material Top Tabs
@@ -42,7 +41,11 @@ const MemoirEntries = observer(({navigation}) => {
       desc={item.desc}
       date={item.date}
       onPress={() =>
-        navigation.navigate('MemoirSingle', {id: item._id, newEntry: false})
+        navigation.navigate('EntrySingle', {
+          id: item._id,
+          newEntry: false,
+          memoir: true,
+        })
       }
       mood={item.mood}
     />
