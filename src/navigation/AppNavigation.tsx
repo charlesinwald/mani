@@ -195,7 +195,7 @@ const AppNavigation = observer(() => {
             component={ChecklistEntries}
             options={{
               tabBarTestID: 'Tab.Manifest',
-              tabBarLabel: 'Checklist',
+              tabBarLabel: 'mani',
               tabBarIcon: ({color}) => <ManifestIcon style={styles.icon} />,
             }}
           />
