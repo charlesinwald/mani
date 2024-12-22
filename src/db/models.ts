@@ -66,6 +66,7 @@ class ChecklistEntry extends Realm.Object {
   thinkAboutIt: boolean = false; // New property
   talkAboutIt: boolean = false; // New property
   actOnIt: boolean = false; // New property
+  completed: boolean = false;
   createdAt: number | undefined;
   modifiedAt: number | undefined;
   deleted: boolean = false;
@@ -79,6 +80,7 @@ class ChecklistEntry extends Realm.Object {
       thinkAboutIt: {type: 'bool', default: false}, // New property
       talkAboutIt: {type: 'bool', default: false}, // New property
       actOnIt: {type: 'bool', default: false}, // New property
+      completed: {type: 'bool', default: false},
       createdAt: 'int',
       modifiedAt: 'int',
       deleted: {type: 'bool', default: false},

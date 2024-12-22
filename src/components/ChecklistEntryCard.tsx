@@ -21,6 +21,7 @@ interface ChecklistEntryCardProps {
   onToggleThinkAboutIt: () => void;
   onToggleTalkAboutIt: () => void;
   onToggleActOnIt: () => void;
+  onComplete: () => void; // New prop
 }
 
 const ChecklistEntryCard: React.FC<ChecklistEntryCardProps> = ({
@@ -33,6 +34,7 @@ const ChecklistEntryCard: React.FC<ChecklistEntryCardProps> = ({
   onToggleThinkAboutIt,
   onToggleTalkAboutIt,
   onToggleActOnIt,
+  onComplete,
 }) => {
   const formattedDate = new Date(createdAt).toLocaleDateString('en-US', {
     year: 'numeric',
@@ -54,7 +56,7 @@ const ChecklistEntryCard: React.FC<ChecklistEntryCardProps> = ({
     setShowAwardDialog(false);
   };
 
-  const startProgress = () => {
+  const startProgress = (actionType: 'delete' | 'complete') => {
     progressAnim.setValue(0);
     Animated.timing(progressAnim, {
       toValue: 1,
@@ -62,10 +64,11 @@ const ChecklistEntryCard: React.FC<ChecklistEntryCardProps> = ({
       useNativeDriver: false,
     }).start(({finished}) => {
       if (finished) {
-        // Handle completion
+        if (actionType === 'complete') {
+          onComplete(); // Call the completion handler
+        }
         resetProgress();
       } else {
-        // Handle interruption
         resetProgress();
       }
     });
@@ -202,7 +205,7 @@ const ChecklistEntryCard: React.FC<ChecklistEntryCardProps> = ({
                 delayLongPress={3000}
                 onPressIn={() => {
                   setIsCompleting(true);
-                  startProgress();
+                  startProgress('complete'); // Trigger "complete" action
                 }}
                 onPressOut={() => {
                   if (progressAnim.__getValue() < 1) {

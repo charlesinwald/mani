@@ -16,6 +16,7 @@ const ChecklistEntryModel = types
     actOnIt: types.boolean,
     createdAt: types.number,
     modifiedAt: types.number,
+    completed: types.optional(types.boolean, false),
   })
   .actions(self => ({
     setDescription(description: string) {
@@ -36,6 +37,10 @@ const ChecklistEntryModel = types
     },
     toggleActOnIt() {
       self.actOnIt = !self.actOnIt;
+      self.modifiedAt = dayjs().valueOf();
+    },
+    toggleCompleted() {
+      self.completed = !self.completed;
       self.modifiedAt = dayjs().valueOf();
     },
   }))
@@ -64,6 +69,7 @@ export const createChecklistEntryModel = (
     thinkAboutIt: snapshot?.thinkAboutIt ?? false,
     talkAboutIt: snapshot?.talkAboutIt ?? false,
     actOnIt: snapshot?.actOnIt ?? false,
+    completed: snapshot?.completed ?? false,
     createdAt: snapshot?.createdAt ?? dayjs().valueOf(),
     modifiedAt: snapshot?.modifiedAt ?? dayjs().valueOf(),
   };

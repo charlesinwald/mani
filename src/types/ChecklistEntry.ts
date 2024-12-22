@@ -7,5 +7,6 @@ type ChecklistEntryType = {
   actOnIt: boolean;
   createdAt: number;
   modifiedAt: number;
+  completed: boolean;
 };
 export type {ChecklistEntryType};

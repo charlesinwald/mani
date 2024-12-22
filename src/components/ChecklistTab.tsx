@@ -36,6 +36,15 @@ const ChecklistTab = observer<ChecklistTabProps>(({type, navigation}) => {
     item => item.type === type,
   );
 
+  const handleComplete = (entry: ChecklistEntryType) => {
+    // Logic to mark the entry as completed
+    store.updateChecklistEntry({
+      ...entry,
+      completed: true,
+    });
+    console.log('Entry completed');
+    // Example: Update state or make an API call
+  };
 
   const renderItem = (item: ChecklistEntryType) => (
     <ChecklistEntryCard
@@ -63,6 +72,7 @@ const ChecklistTab = observer<ChecklistTabProps>(({type, navigation}) => {
         store.toggleActOnIt(item._id);
         triggerRerender();
       }}
+      onComplete={() => handleComplete(item)}
       key={item._id}
     />
   );

@@ -180,9 +180,10 @@ const addChecklistEntryToDB = async (
       _id: uuidv4(),
       desc: item.desc,
       type: item.type,
-      thinkAboutIt: item.thinkAboutIt, // Initialize new property
-      talkAboutIt: item.talkAboutIt, // Initialize new property
-      actOnIt: item.actOnIt, // Initialize new property
+      thinkAboutIt: item.thinkAboutIt,
+      talkAboutIt: item.talkAboutIt,
+      actOnIt: item.actOnIt,
+      completed: item.completed ?? false,
       createdAt: dayjs(new Date()).valueOf(),
       modifiedAt: dayjs(new Date()).valueOf(),
     });
@@ -200,9 +201,10 @@ const updateChecklistEntryToDB = async (item: ChecklistEntryType) => {
     realm.write(() => {
       entry.desc = item.desc;
       entry.type = item.type;
-      entry.thinkAboutIt = item.thinkAboutIt; // Update new property
-      entry.talkAboutIt = item.talkAboutIt; // Update new property
-      entry.actOnIt = item.actOnIt; // Update new property
+      entry.thinkAboutIt = item.thinkAboutIt;
+      entry.talkAboutIt = item.talkAboutIt;
+      entry.actOnIt = item.actOnIt;
+      entry.completed = item.completed;
       entry.modifiedAt = dayjs(new Date()).valueOf();
     });
   }
