@@ -1,5 +1,11 @@
 import React, {useContext, useState} from 'react';
-import {StyleSheet, View, TouchableOpacity, Text} from 'react-native';
+import {
+  StyleSheet,
+  View,
+  TouchableOpacity,
+  Text,
+  ScrollView,
+} from 'react-native';
 import {List} from '@ui-kitten/components';
 import {observer} from 'mobx-react-lite';
 import {MSTContext} from '../mst';
@@ -31,10 +37,12 @@ const ChecklistTab = observer<ChecklistTabProps>(({type, navigation}) => {
     throw new Error(`Invalid type: ${type}`);
   }
 
-  // Filter checklist entries based on type
+  // Split entries into completed and uncompleted
   const filteredData = store.checklistEntries.filter(
     item => item.type === type,
   );
+  const uncompletedEntries = filteredData.filter(item => !item.completed);
+  const completedEntries = filteredData.filter(item => item.completed);
 
   const handleComplete = (entry: ChecklistEntryType) => {
     // Logic to mark the entry as completed
@@ -73,6 +81,7 @@ const ChecklistTab = observer<ChecklistTabProps>(({type, navigation}) => {
         triggerRerender();
       }}
       onComplete={() => handleComplete(item)}
+      completed={item.completed}
       key={item._id}
     />
   );
@@ -97,14 +106,37 @@ const ChecklistTab = observer<ChecklistTabProps>(({type, navigation}) => {
           Add New {toCapsObject[type as keyof typeof toCapsObject]} Goal
         </Text>
       </TouchableOpacity>
-      <List
-        style={styles.list}
-        data={filteredData}
-        renderItem={({item}) => renderItem(item as ChecklistEntryType)}
-        ListEmptyComponent={
-          <NoData title={`Add a new ${type} checklist by pressing + button`} />
-        }
-      />
+
+      <ScrollView style={styles.scrollContainer}>
+        {/* Uncompleted Items Section */}
+        <View style={styles.section}>
+          <Text style={styles.sectionHeader}>In Progress</Text>
+          <List
+            style={styles.list}
+            scrollEnabled={false}
+            data={uncompletedEntries}
+            renderItem={({item}) => renderItem(item as ChecklistEntryType)}
+            ListEmptyComponent={
+              <NoData
+                title={`Add a new ${type} checklist by pressing + button`}
+              />
+            }
+          />
+        </View>
+
+        {/* Completed Items Section */}
+        {completedEntries.length > 0 && (
+          <View style={styles.section}>
+            <Text style={styles.sectionHeader}>Completed</Text>
+            <List
+              style={styles.list}
+              scrollEnabled={false}
+              data={completedEntries}
+              renderItem={({item}) => renderItem(item as ChecklistEntryType)}
+            />
+          </View>
+        )}
+      </ScrollView>
     </View>
   );
 });
@@ -115,6 +147,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f5f5f5',
+  },
+  scrollContainer: {
+    flex: 1,
   },
   addButton: {
     backgroundColor: '#4CAF50',
@@ -128,6 +163,15 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   list: {
-    flex: 1,
+    backgroundColor: '#f5f5f5',
+  },
+  section: {
+    backgroundColor: '#f5f5f5',
+  },
+  sectionHeader: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    padding: 10,
+    backgroundColor: '#e0e0e0',
   },
 });

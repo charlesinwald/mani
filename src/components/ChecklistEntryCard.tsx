@@ -17,6 +17,7 @@ interface ChecklistEntryCardProps {
   thinkAboutIt: boolean; // Change to boolean
   talkAboutIt: boolean; // Change to boolean
   actOnIt: boolean; // Change to boolean
+  completed: boolean;
   onPress: () => void;
   onToggleThinkAboutIt: () => void;
   onToggleTalkAboutIt: () => void;
@@ -29,6 +30,7 @@ const ChecklistEntryCard: React.FC<ChecklistEntryCardProps> = ({
   thinkAboutIt,
   talkAboutIt,
   actOnIt,
+  completed,
   onPress,
   createdAt,
   onToggleThinkAboutIt,
@@ -87,14 +89,16 @@ const ChecklistEntryCard: React.FC<ChecklistEntryCardProps> = ({
               }}>
               <Icon style={styles.icon} fill="#8F9BB3" name="trash-2-outline" />
             </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.iconContainer}
-              onPress={() => {
-                setShowAwardDialog(true);
-                setShowTrashDialog(false);
-              }}>
-              <Icon style={styles.icon} fill="#8F9BB3" name="award-outline" />
-            </TouchableOpacity>
+            {!completed && (
+              <TouchableOpacity
+                style={styles.iconContainer}
+                onPress={() => {
+                  setShowAwardDialog(true);
+                  setShowTrashDialog(false);
+                }}>
+                <Icon style={styles.icon} fill="#8F9BB3" name="award-outline" />
+              </TouchableOpacity>
+            )}
           </View>
           <View style={styles.cardContent}>
             <View style={styles.titleContainer}>
@@ -104,33 +108,37 @@ const ChecklistEntryCard: React.FC<ChecklistEntryCardProps> = ({
 
               <View style={styles.progressContainer}>
                 <Text style={styles.date}>{formattedDate}</Text>
-                <View style={styles.checkboxContainer}>
-                  <Text style={styles.checkboxLabel}>Think about it</Text>
-                  <CheckBox
-                    style={styles.checkbox}
-                    value={thinkAboutIt} // Use boolean directly
-                    onValueChange={onToggleThinkAboutIt}
-                    tintColors={{true: '#3366FF', false: '#8F9BB3'}}
-                  />
-                </View>
-                <View style={styles.checkboxContainer}>
-                  <Text style={styles.checkboxLabel}>Talk about it</Text>
-                  <CheckBox
-                    style={styles.checkbox}
-                    value={talkAboutIt} // Use boolean directly
-                    onValueChange={onToggleTalkAboutIt}
-                    tintColors={{true: '#3366FF', false: '#8F9BB3'}}
-                  />
-                </View>
-                <View style={styles.checkboxContainer}>
-                  <Text style={styles.checkboxLabel}>Act on it</Text>
-                  <CheckBox
-                    style={styles.checkbox}
-                    value={actOnIt} // Use boolean directly
-                    onValueChange={onToggleActOnIt}
-                    tintColors={{true: '#3366FF', false: '#8F9BB3'}}
-                  />
-                </View>
+                {!completed && (
+                  <>
+                    <View style={styles.checkboxContainer}>
+                      <Text style={styles.checkboxLabel}>Think about it</Text>
+                      <CheckBox
+                        style={styles.checkbox}
+                        value={thinkAboutIt}
+                        onValueChange={onToggleThinkAboutIt}
+                        tintColors={{true: '#3366FF', false: '#8F9BB3'}}
+                      />
+                    </View>
+                    <View style={styles.checkboxContainer}>
+                      <Text style={styles.checkboxLabel}>Talk about it</Text>
+                      <CheckBox
+                        style={styles.checkbox}
+                        value={talkAboutIt}
+                        onValueChange={onToggleTalkAboutIt}
+                        tintColors={{true: '#3366FF', false: '#8F9BB3'}}
+                      />
+                    </View>
+                    <View style={styles.checkboxContainer}>
+                      <Text style={styles.checkboxLabel}>Act on it</Text>
+                      <CheckBox
+                        style={styles.checkbox}
+                        value={actOnIt}
+                        onValueChange={onToggleActOnIt}
+                        tintColors={{true: '#3366FF', false: '#8F9BB3'}}
+                      />
+                    </View>
+                  </>
+                )}
               </View>
             </View>
           </View>
