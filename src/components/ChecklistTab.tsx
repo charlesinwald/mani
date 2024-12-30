@@ -54,38 +54,41 @@ const ChecklistTab = observer<ChecklistTabProps>(({type, navigation}) => {
     // Example: Update state or make an API call
   };
 
-  const renderItem = (item: ChecklistEntryType) => (
-    <ChecklistEntryCard
-      desc={item.desc}
-      thinkAboutIt={item.thinkAboutIt}
-      talkAboutIt={item.talkAboutIt}
-      actOnIt={item.actOnIt}
-      createdAt={item.createdAt}
-      onPress={() => {
-        console.log('Pressed');
-        navigateToDetail(item._id);
-      }}
-      onToggleThinkAboutIt={() => {
-        console.log('Toggled Think About It');
-        store.toggleThinkAboutIt(item._id);
-        triggerRerender();
-      }}
-      onToggleTalkAboutIt={() => {
-        console.log('Toggled Talk About It');
-        store.toggleTalkAboutIt(item._id);
-        triggerRerender();
-      }}
-      onToggleActOnIt={() => {
-        console.log('Toggled Act On It');
-        store.toggleActOnIt(item._id);
-        triggerRerender();
-      }}
-      onComplete={() => handleComplete(item)}
-      completed={item.completed}
-      key={item._id}
-    />
-  );
-
+  const renderItem = (item: ChecklistEntryType) => {
+    console.log('item', item);
+    return (
+      <ChecklistEntryCard
+        desc={item.desc}
+        thinkAboutIt={item.thinkAboutIt}
+        talkAboutIt={item.talkAboutIt}
+        actOnIt={item.actOnIt}
+        createdAt={item.createdAt}
+        progress_logs={item.progress_logs || []}
+        onPress={() => {
+          console.log('Pressed');
+          navigateToDetail(item._id);
+        }}
+        onToggleThinkAboutIt={() => {
+          console.log('Toggled Think About It');
+          store.toggleThinkAboutIt(item._id);
+          triggerRerender();
+        }}
+        onToggleTalkAboutIt={() => {
+          console.log('Toggled Talk About It');
+          store.toggleTalkAboutIt(item._id);
+          triggerRerender();
+        }}
+        onToggleActOnIt={() => {
+          console.log('Toggled Act On It');
+          store.toggleActOnIt(item._id);
+          triggerRerender();
+        }}
+        onComplete={() => handleComplete(item)}
+        completed={item.completed}
+        key={item._id}
+      />
+    );
+  };
   const navigateToDetail = (id: string) => {
     navigation.navigate('ChecklistEntryDetail', {id, type});
   };

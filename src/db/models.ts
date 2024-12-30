@@ -60,6 +60,24 @@ class User extends Realm.Object {
   };
 }
 
+class ChecklistLog extends Realm.Object {
+  _id!: string;
+  timestamp: string = '0';
+  note: string = '';
+  type: 'think' | 'talk' | 'act' = 'think';
+
+  static schema: Realm.ObjectSchema = {
+    name: 'ChecklistLog',
+    properties: {
+      _id: 'string',
+      timestamp: 'string',
+      note: 'string',
+      type: 'string',
+    },
+    primaryKey: '_id',
+  };
+}
+
 class ChecklistEntry extends Realm.Object {
   _id!: string;
   desc: string = '';
@@ -71,6 +89,7 @@ class ChecklistEntry extends Realm.Object {
   modifiedAt: number | undefined;
   deleted: boolean = false;
   type: 'shortterm' | 'longterm' | 'lifetime' = 'shortterm';
+  progress_logs!: Realm.List<ChecklistLog>;
 
   static schema: Realm.ObjectSchema = {
     name: 'ChecklistEntry',
@@ -85,6 +104,7 @@ class ChecklistEntry extends Realm.Object {
       modifiedAt: 'int',
       deleted: {type: 'bool', default: false},
       type: {type: 'string', default: 'shortterm'},
+      progress_logs: 'ChecklistLog[]', // Add the logs array property
     },
     primaryKey: '_id',
   };
@@ -110,4 +130,4 @@ class MemoirEntry extends Realm.Object {
   };
 }
 
-export {Entry, User, ChecklistEntry, MemoirEntry};
+export {Entry, User, ChecklistEntry, MemoirEntry, ChecklistLog};

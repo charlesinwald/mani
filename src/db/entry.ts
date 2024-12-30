@@ -142,6 +142,7 @@ const importToDBFromJSON = (data: DataFromFile) => {
           itemFoundInDB.longitude = obj.longitude;
           itemFoundInDB.weather = obj.weather;
           itemFoundInDB.temperature = obj.temperature;
+          itemFoundInDB.progress_logs = obj.progress_logs ?? [];
         }
       }
     });
@@ -186,6 +187,7 @@ const addChecklistEntryToDB = async (
       completed: item.completed ?? false,
       createdAt: dayjs(new Date()).valueOf(),
       modifiedAt: dayjs(new Date()).valueOf(),
+      progress_logs: item.progress_logs ?? [],
     });
   });
 };
@@ -198,6 +200,7 @@ const updateChecklistEntryToDB = async (item: ChecklistEntryType) => {
   );
 
   if (entry) {
+    console.log('updateChecklistEntryToDB', item);
     realm.write(() => {
       entry.desc = item.desc;
       entry.type = item.type;
@@ -205,7 +208,7 @@ const updateChecklistEntryToDB = async (item: ChecklistEntryType) => {
       entry.talkAboutIt = item.talkAboutIt;
       entry.actOnIt = item.actOnIt;
       entry.completed = item.completed;
-      entry.modifiedAt = dayjs(new Date()).valueOf();
+      entry.progress_logs = item.progress_logs ?? [];
     });
   }
 };

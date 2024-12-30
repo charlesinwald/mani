@@ -6,11 +6,12 @@ import {
   TextInput,
   ScrollView,
   Alert,
+  Modal,
 } from 'react-native';
 import {observer} from 'mobx-react-lite';
 import 'react-native-get-random-values';
 import dayjs from 'dayjs';
-import {Card, Button, Text} from '@ui-kitten/components';
+import {Card, Button, Text, Divider} from '@ui-kitten/components';
 import {MSTContext} from '../mst';
 import {ChecklistEntrySingleProps} from '../navigation/types';
 import {Layout} from '../components/Layout';
@@ -31,6 +32,8 @@ const ChecklistEntrySingle: React.FC<ChecklistEntrySingleProps> = observer(
       (route.params?.type as 'shortterm' | 'longterm' | 'lifetime') ||
         'shortterm',
     );
+
+    console.log('active', active);
 
     const properNouns = useProperNouns(inputData);
 

@@ -84,5 +84,6 @@ const styles = StyleSheet.create({
   },
   gestureContainer: {
     flex: 1,
+    marginBottom: 100,
   },
 });

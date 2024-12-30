@@ -1,4 +1,7 @@
 {
   "name": "PrivateDiaryApp",
-  "displayName": "mani"
+  "displayName": "mani",
+  "packagerOpts": {
+    "dev": true
+  }
 }

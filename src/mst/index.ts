@@ -8,7 +8,7 @@ import {
   DiaryEntryOut,
 } from '../types/DiaryEntry';
 import {MemoirEntryIn, MemoirEntryOut} from '../types/MemoirEntry';
-import {ChecklistEntryType} from '../types/ChecklistEntry';
+import {ChecklistEntryType, ChecklistLogType} from '../types/ChecklistEntry';
 import MemoirEntryModel from './MemoirEntry';
 // Stores
 import DiaryEntry from './DiaryEntry';
@@ -202,6 +202,49 @@ const RootStore = types
       console.log('newEntry', newEntry);
       self.checklistEntries.push(newEntry);
       addChecklistEntryToDB(newEntry as ChecklistEntryType);
+    },
+
+    addChecklistLog(log: ChecklistLogType) {
+      console.log('addChecklistLog', log);
+      const checklistEntry: ChecklistEntryType | undefined =
+        self.checklistEntries.find(e => e._id === log.checklistId);
+
+      if (checklistEntry && checklistEntry.progress_logs) {
+        // Ensure the log is structured correctly
+        checklistEntry.progress_logs.push({
+          _id: log._id, // Ensure this is unique
+          timestamp: log.timestamp,
+          note: log.note,
+          type: log.type,
+          checklistId: log.checklistId,
+        });
+        console.log('checklistEntry mst', JSON.stringify(checklistEntry));
+
+        // Update the checklist entry in the database
+        updateChecklistEntryToDB(checklistEntry);
+      } else {
+        console.error(`Checklist entry with ID ${log.checklistId} not found.`);
+      }
+    },
+
+    updateChecklistLog(log: ChecklistLogType) {
+      const index = self.checklistEntries.findIndex(
+        e => e._id === log.checklistId,
+      );
+      if (index !== -1) {
+        self.checklistEntries[index].progress_logs.push(log);
+        updateChecklistEntryToDB(self.checklistEntries[index]);
+      }
+    },
+
+    deleteChecklistLog(id: string) {
+      const index = self.checklistEntries.findIndex(e => e._id === id);
+      if (index !== -1) {
+        self.checklistEntries[index].progress_logs = self.checklistEntries[
+          index
+        ].progress_logs.filter(log => log._id !== id);
+        updateChecklistEntryToDB(self.checklistEntries[index]);
+      }
     },
 
     updateChecklistEntry(entry: ChecklistEntryType) {
