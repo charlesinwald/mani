@@ -15,7 +15,7 @@ import {verifyPwdWithStoredHash, deletePassword} from '../../utils/password';
 const RemovePasswordSchema = Yup.object().shape({
   oldPassword: Yup.string()
     .trim('Password cannot include spaces')
-    .min(5, 'Too Short!')
+    // .min(5, 'Too Short!')
     .required('Required'),
 });
 

@@ -1,5 +1,11 @@
-import React, {useContext} from 'react';
-import {StyleSheet, View, TouchableOpacity, Text} from 'react-native';
+import React, {useContext, useState} from 'react';
+import {
+  StyleSheet,
+  View,
+  TouchableOpacity,
+  Text,
+  ScrollView,
+} from 'react-native';
 import {List} from '@ui-kitten/components';
 import {observer} from 'mobx-react-lite';
 import {MSTContext} from '../mst';
@@ -20,6 +26,7 @@ const toCapsObject = {
 
 const ChecklistTab = observer<ChecklistTabProps>(({type, navigation}) => {
   const store = useContext(MSTContext);
+  const [_, setDummyState] = useState(0);
 
   // Ensure 'type' is one of the keys of 'toCapsObject'
   const validTypes = Object.keys(toCapsObject) as Array<
@@ -30,34 +37,69 @@ const ChecklistTab = observer<ChecklistTabProps>(({type, navigation}) => {
     throw new Error(`Invalid type: ${type}`);
   }
 
-  // Filter checklist entries based on type
+  // Split entries into completed and uncompleted
   const filteredData = store.checklistEntries.filter(
     item => item.type === type,
   );
+  const uncompletedEntries = filteredData.filter(item => !item.completed);
+  const completedEntries = filteredData.filter(item => item.completed);
 
-  const renderItem = (item: ChecklistEntryType) => (
-    <ChecklistEntryCard
-      desc={item.desc}
-      isCompleted={item.isCompleted ? 1 : 0}
-      createdAt={item.createdAt}
-      onPress={() => {
-        console.log('Pressed');
-        navigateToDetail(item._id);
-      }}
-      onToggleCompletion={() => {
-        console.log('Toggled');
-        store.toggleChecklistEntryCompletion(item._id);
-      }}
-      key={item._id}
-    />
-  );
+  const handleComplete = (entry: ChecklistEntryType) => {
+    // Logic to mark the entry as completed
+    store.updateChecklistEntry({
+      ...entry,
+      completed: true,
+    });
+    console.log('Entry completed');
+    // Example: Update state or make an API call
+  };
 
+  const renderItem = (item: ChecklistEntryType) => {
+    console.log('item', item);
+    return (
+      <ChecklistEntryCard
+        desc={item.desc}
+        thinkAboutIt={item.thinkAboutIt}
+        talkAboutIt={item.talkAboutIt}
+        actOnIt={item.actOnIt}
+        createdAt={item.createdAt}
+        progress_logs={item.progress_logs || []}
+        onPress={() => {
+          console.log('Pressed');
+          navigateToDetail(item._id);
+        }}
+        onToggleThinkAboutIt={() => {
+          console.log('Toggled Think About It');
+          store.toggleThinkAboutIt(item._id);
+          triggerRerender();
+        }}
+        onToggleTalkAboutIt={() => {
+          console.log('Toggled Talk About It');
+          store.toggleTalkAboutIt(item._id);
+          triggerRerender();
+        }}
+        onToggleActOnIt={() => {
+          console.log('Toggled Act On It');
+          store.toggleActOnIt(item._id);
+          triggerRerender();
+        }}
+        onComplete={() => handleComplete(item)}
+        completed={item.completed}
+        key={item._id}
+      />
+    );
+  };
   const navigateToDetail = (id: string) => {
     navigation.navigate('ChecklistEntryDetail', {id, type});
   };
 
   const navigateToAddNew = () => {
     navigation.navigate('ChecklistEntrySingle', {type});
+  };
+
+  // Call this function to trigger a re-render
+  const triggerRerender = () => {
+    setDummyState(prev => prev + 1);
   };
 
   return (
@@ -67,14 +109,37 @@ const ChecklistTab = observer<ChecklistTabProps>(({type, navigation}) => {
           Add New {toCapsObject[type as keyof typeof toCapsObject]} Goal
         </Text>
       </TouchableOpacity>
-      <List
-        style={styles.list}
-        data={filteredData}
-        renderItem={({item}) => renderItem(item as ChecklistEntryType)}
-        ListEmptyComponent={
-          <NoData title={`Add a new ${type} checklist by pressing + button`} />
-        }
-      />
+
+      <ScrollView style={styles.scrollContainer}>
+        {/* Uncompleted Items Section */}
+        <View style={styles.section}>
+          <Text style={styles.sectionHeader}>In Progress</Text>
+          <List
+            style={styles.list}
+            scrollEnabled={false}
+            data={uncompletedEntries}
+            renderItem={({item}) => renderItem(item as ChecklistEntryType)}
+            ListEmptyComponent={
+              <NoData
+                title={`Add a new ${type} checklist by pressing + button`}
+              />
+            }
+          />
+        </View>
+
+        {/* Completed Items Section */}
+        {completedEntries.length > 0 && (
+          <View style={styles.section}>
+            <Text style={styles.sectionHeader}>Completed</Text>
+            <List
+              style={styles.list}
+              scrollEnabled={false}
+              data={completedEntries}
+              renderItem={({item}) => renderItem(item as ChecklistEntryType)}
+            />
+          </View>
+        )}
+      </ScrollView>
     </View>
   );
 });
@@ -85,6 +150,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f5f5f5',
+  },
+  scrollContainer: {
+    flex: 1,
   },
   addButton: {
     backgroundColor: '#4CAF50',
@@ -98,6 +166,15 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   list: {
-    flex: 1,
+    backgroundColor: '#f5f5f5',
+  },
+  section: {
+    backgroundColor: '#f5f5f5',
+  },
+  sectionHeader: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    padding: 10,
+    backgroundColor: '#e0e0e0',
   },
 });

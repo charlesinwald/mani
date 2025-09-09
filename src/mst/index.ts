@@ -7,7 +7,9 @@ import {
   DiaryEntryDBType,
   DiaryEntryOut,
 } from '../types/DiaryEntry';
-import {ChecklistEntryType} from '../types/ChecklistEntry';
+import {MemoirEntryIn, MemoirEntryOut} from '../types/MemoirEntry';
+import {ChecklistEntryType, ChecklistLogType} from '../types/ChecklistEntry';
+import MemoirEntryModel from './MemoirEntry';
 // Stores
 import DiaryEntry from './DiaryEntry';
 import User from './User';
@@ -24,17 +26,29 @@ import {
   addChecklistEntryToDB,
   updateChecklistEntryToDB,
   deleteChecklistEntryFromDB,
+  readMemoirEntriesFromDB,
+  addMemoirEntryToDB,
+  updateMemoirEntryToDB,
+  deleteOneMemoirEntryFromDB,
 } from '../db/entry';
+import {MemoirEntryType} from '../types/MemoirEntry';
 
 const RootStore = types
   .model({
     entries: types.array(DiaryEntry),
     checklistEntries: types.array(ChecklistEntryModel),
+    memoirEntries: types.array(MemoirEntryModel),
     user: User,
   })
   .views(self => ({
     getData() {
       return self.entries.sort(
+        (a, b) => new Date(b.date).valueOf() - new Date(a.date).valueOf(),
+      );
+    },
+
+    getMemoirEntries() {
+      return self.memoirEntries.sort(
         (a, b) => new Date(b.date).valueOf() - new Date(a.date).valueOf(),
       );
     },
@@ -93,6 +107,12 @@ const RootStore = types
         item => item !== undefined,
       );
       self.checklistEntries = checklistItemsFromDB;
+
+      // Populate memoir entries
+      let memoirItemsFromDB = readMemoirEntriesFromDB().filter(
+        item => item !== undefined,
+      );
+      self.memoirEntries = memoirItemsFromDB;
     },
 
     addEntry(entry: DiaryEntryIn) {
@@ -136,6 +156,34 @@ const RootStore = types
       }
     },
 
+    // Memoir Entry actions
+    addMemoirEntry(entry: MemoirEntryIn) {
+      console.log('addMemoirEntry', entry);
+      const newEntry = MemoirEntryModel.create({
+        ...entry,
+        desc: (entry as {desc?: string}).desc || '', // Ensure desc is provided with a default value
+      });
+      self.memoirEntries.push(newEntry);
+      addMemoirEntryToDB(newEntry);
+    },
+
+    updateMemoirEntry(entry: MemoirEntryType) {
+      const index = self.memoirEntries.findIndex(e => e._id === entry._id);
+      if (index !== -1) {
+        self.memoirEntries[index] = MemoirEntryModel.create(entry);
+        console.log('updateMemoirEntry', entry);
+        updateMemoirEntryToDB(entry);
+      }
+    },
+
+    deleteMemoirEntry(id: string) {
+      const entryToDelete = self.memoirEntries.find(e => e._id === id);
+      if (entryToDelete) {
+        destroy(entryToDelete);
+        deleteOneMemoirEntryFromDB(id);
+      }
+    },
+
     // Checklist Entry actions
     addChecklistEntry(
       entry: Omit<ChecklistEntryType, '_id' | 'createdAt' | 'modifiedAt'>,
@@ -147,10 +195,56 @@ const RootStore = types
         createdAt: dayjs().valueOf(),
         modifiedAt: dayjs().valueOf(),
         type: entry.type || 'shortterm', // Provide default value if type is undefined
+        thinkAboutIt: false,
+        talkAboutIt: false,
+        actOnIt: false,
       });
       console.log('newEntry', newEntry);
       self.checklistEntries.push(newEntry);
       addChecklistEntryToDB(newEntry as ChecklistEntryType);
+    },
+
+    addChecklistLog(log: ChecklistLogType) {
+      console.log('addChecklistLog', log);
+      const checklistEntry: ChecklistEntryType | undefined =
+        self.checklistEntries.find(e => e._id === log.checklistId);
+
+      if (checklistEntry && checklistEntry.progress_logs) {
+        // Ensure the log is structured correctly
+        checklistEntry.progress_logs.push({
+          _id: log._id, // Ensure this is unique
+          timestamp: log.timestamp,
+          note: log.note,
+          type: log.type,
+          checklistId: log.checklistId,
+        });
+        console.log('checklistEntry mst', JSON.stringify(checklistEntry));
+
+        // Update the checklist entry in the database
+        updateChecklistEntryToDB(checklistEntry);
+      } else {
+        console.error(`Checklist entry with ID ${log.checklistId} not found.`);
+      }
+    },
+
+    updateChecklistLog(log: ChecklistLogType) {
+      const index = self.checklistEntries.findIndex(
+        e => e._id === log.checklistId,
+      );
+      if (index !== -1) {
+        self.checklistEntries[index].progress_logs.push(log);
+        updateChecklistEntryToDB(self.checklistEntries[index]);
+      }
+    },
+
+    deleteChecklistLog(id: string) {
+      const index = self.checklistEntries.findIndex(e => e._id === id);
+      if (index !== -1) {
+        self.checklistEntries[index].progress_logs = self.checklistEntries[
+          index
+        ].progress_logs.filter(log => log._id !== id);
+        updateChecklistEntryToDB(self.checklistEntries[index]);
+      }
     },
 
     updateChecklistEntry(entry: ChecklistEntryType) {
@@ -169,13 +263,31 @@ const RootStore = types
       }
     },
 
-    toggleChecklistEntryCompletion(_id: string) {
-      console.log('toggleChecklistEntryCompletion _id', _id);
-      const entry = self.checklistEntries.find(e => e._id === _id);
+    toggleThinkAboutIt(id: string) {
+      const entry = self.checklistEntries.find(e => e._id === id);
       if (entry) {
-        entry.isCompleted = !entry.isCompleted; // Assuming 'completed' is a property of ChecklistEntryType
-        console.log('entry isCompleted', entry);
-        updateChecklistEntryToDB(entry); // Update the entry in the database
+        const newEntry = entry;
+        newEntry.thinkAboutIt = !entry.thinkAboutIt; // Toggle the property
+        newEntry.modifiedAt = dayjs().valueOf(); // Update modifiedAt
+        updateChecklistEntryToDB(newEntry);
+      }
+    },
+    toggleTalkAboutIt(id: string) {
+      const entry = self.checklistEntries.find(e => e._id === id);
+      if (entry) {
+        const newEntry = entry;
+        newEntry.talkAboutIt = !entry.talkAboutIt; // Toggle the property
+        newEntry.modifiedAt = dayjs().valueOf(); // Update modifiedAt
+        updateChecklistEntryToDB(newEntry);
+      }
+    },
+    toggleActOnIt(id: string) {
+      const entry = self.checklistEntries.find(e => e._id === id);
+      if (entry) {
+        const newEntry = entry;
+        newEntry.actOnIt = !entry.actOnIt; // Toggle the property
+        newEntry.modifiedAt = dayjs().valueOf(); // Update modifiedAt
+        updateChecklistEntryToDB(newEntry);
       }
     },
   }));
@@ -183,6 +295,7 @@ const RootStore = types
 const rootStore = RootStore.create({
   entries: [],
   checklistEntries: [],
+  memoirEntries: [],
   user: {
     _id: '',
     name: '',
@@ -196,6 +309,8 @@ const rootStore = RootStore.create({
 });
 
 export default rootStore;
-export interface RootStoreType extends Instance<typeof RootStore> {}
+export interface RootStoreType extends Instance<typeof RootStore> {
+  memoirEntries: any;
+}
 
 export const MSTContext = React.createContext<RootStoreType>(rootStore);

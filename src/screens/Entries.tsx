@@ -12,11 +12,69 @@ import {Layout} from '../components/Layout';
 import EntryCard from '../components/EntryCard';
 import NoData from '../components/NoData';
 import Search from '../components/Search';
-
 import {PermissionsAndroid} from 'react-native';
 import GestureRecognizer from 'react-native-swipe-gestures';
+import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs'; // Use Material Top Tabs
 
-const Entries: React.FC<EntriesProps> = observer(({navigation}) => {
+const Tab = createMaterialTopTabNavigator(); // Create Top Tab Navigator
+
+const MemoirEntries = observer(({navigation}) => {
+  const store = useContext(MSTContext);
+  const [searchQuery, setSearchQuery] = useState('');
+  const dummy = (status: boolean) => {
+    if (!status) {
+      setSearchQuery('');
+    }
+  };
+
+  const handleSearchInput = (q: string) => {
+    setSearchQuery(q);
+  };
+
+  const filteredData = store.memoirEntries.filter(item =>
+    item.desc.includes(searchQuery),
+  );
+
+  const renderItem = ({item}: any) => (
+    <EntryCard
+      key={`memoircard-${item._id}`}
+      desc={item.desc}
+      date={item.date}
+      onPress={() =>
+        navigation.navigate('EntrySingle', {
+          id: item._id,
+          newEntry: false,
+          memoir: true,
+        })
+      }
+      mood={item.mood}
+    />
+  );
+
+  return (
+    <Layout>
+      <Search onToggle={dummy} onChangeText={handleSearchInput} />
+      <TouchableOpacity
+        style={styles.addButton}
+        onPress={() =>
+          navigation.navigate('EntrySingle', {
+            id: '',
+            newEntry: true,
+            memoir: true,
+          })
+        }>
+        <Text style={styles.addButtonText}>Add New Entry</Text>
+      </TouchableOpacity>
+      <List
+        data={filteredData}
+        renderItem={renderItem}
+        ListEmptyComponent={<NoData title="No memoir entries found." />}
+      />
+    </Layout>
+  );
+});
+
+const DiaryEntries: React.FC<EntriesProps> = observer(({navigation}) => {
   const store = useContext(MSTContext);
   const [searchQuery, setSearchQuery] = useState('');
   const [isRefreshing, setRefreshing] = useState(false);
@@ -109,6 +167,7 @@ const Entries: React.FC<EntriesProps> = observer(({navigation}) => {
           navigation.navigate('EntrySingle', {
             id: '',
             newEntry: true,
+            memoir: false,
           })
         }>
         <Text style={styles.addButtonText}>Add New Entry</Text>
@@ -132,6 +191,17 @@ const Entries: React.FC<EntriesProps> = observer(({navigation}) => {
         }
       />
     </Layout>
+  );
+});
+
+const Entries: React.FC = observer(({navigation}) => {
+  return (
+    <View style={styles.container}>
+      <Tab.Navigator>
+        <Tab.Screen name="Diary Entries" component={DiaryEntries} />
+        <Tab.Screen name="Memoir Entries" component={MemoirEntries} />
+      </Tab.Navigator>
+    </View>
   );
 });
 

@@ -1,10 +1,16 @@
 import Realm from 'realm';
-import {ChecklistEntry, Entry, User} from './models';
+import {ChecklistEntry, Entry, User, MemoirEntry, ChecklistLog} from './models';
 import RNFS from 'react-native-fs';
 
 // Set up Realm configuration
 const realmConfig = {
-  schema: [Entry.schema, User.schema, ChecklistEntry.schema], // Your schemas
+  schema: [
+    Entry.schema,
+    User.schema,
+    ChecklistEntry.schema,
+    ChecklistLog.schema,
+    MemoirEntry.schema,
+  ], // Your schemas
   schemaVersion: 4, // Increment the schema version
   migration: (
     oldRealm: {schemaVersion: number; objects: (arg0: string) => any},

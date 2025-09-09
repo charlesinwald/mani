@@ -10,7 +10,7 @@ export type RootTabParamList = {
   ChecklistEntries: undefined;
   Checklist: undefined;
   SettingsStack: undefined;
-  EntrySingle: {id: string; newEntry?: boolean};
+  EntrySingle: {id: string; newEntry?: boolean; memoir?: boolean};
   ChecklistEntrySingle: {id: string; newEntry?: boolean; type: string};
 };
 

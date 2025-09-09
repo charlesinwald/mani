@@ -60,28 +60,74 @@ class User extends Realm.Object {
   };
 }
 
+class ChecklistLog extends Realm.Object {
+  _id!: string;
+  timestamp: string = '0';
+  note: string = '';
+  type: 'think' | 'talk' | 'act' = 'think';
+
+  static schema: Realm.ObjectSchema = {
+    name: 'ChecklistLog',
+    properties: {
+      _id: 'string',
+      timestamp: 'string',
+      note: 'string',
+      type: 'string',
+    },
+    primaryKey: '_id',
+  };
+}
+
 class ChecklistEntry extends Realm.Object {
   _id!: string;
   desc: string = '';
-  isCompleted: boolean = false;
+  thinkAboutIt: boolean = false; // New property
+  talkAboutIt: boolean = false; // New property
+  actOnIt: boolean = false; // New property
+  completed: boolean = false;
   createdAt: number | undefined;
   modifiedAt: number | undefined;
   deleted: boolean = false;
   type: 'shortterm' | 'longterm' | 'lifetime' = 'shortterm';
+  progress_logs!: Realm.List<ChecklistLog>;
 
   static schema: Realm.ObjectSchema = {
     name: 'ChecklistEntry',
     properties: {
       _id: 'string',
       desc: 'string',
-      isCompleted: {type: 'bool', default: false},
+      thinkAboutIt: {type: 'bool', default: false}, // New property
+      talkAboutIt: {type: 'bool', default: false}, // New property
+      actOnIt: {type: 'bool', default: false}, // New property
+      completed: {type: 'bool', default: false},
       createdAt: 'int',
       modifiedAt: 'int',
       deleted: {type: 'bool', default: false},
       type: {type: 'string', default: 'shortterm'},
+      progress_logs: 'ChecklistLog[]', // Add the logs array property
     },
     primaryKey: '_id',
   };
 }
 
-export {Entry, User, ChecklistEntry};
+class MemoirEntry extends Realm.Object {
+  _id!: string;
+  date: string = ''; // Assuming date is stored as a timestamp
+  desc: string = '';
+  createdAt: number | undefined;
+  modifiedAt: number | undefined;
+
+  static schema: Realm.ObjectSchema = {
+    name: 'MemoirEntry',
+    properties: {
+      _id: 'string',
+      date: 'string', // Assuming date is stored as an integer (timestamp)
+      desc: 'string',
+      createdAt: 'int?',
+      modifiedAt: 'int?',
+    },
+    primaryKey: '_id',
+  };
+}
+
+export {Entry, User, ChecklistEntry, MemoirEntry, ChecklistLog};

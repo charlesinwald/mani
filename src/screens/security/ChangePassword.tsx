@@ -16,11 +16,11 @@ import {updatePassword} from '../../utils/password';
 const ChangePasswordSchema = Yup.object().shape({
   oldPassword: Yup.string()
     .trim('Password cannot include spaces')
-    .min(5, 'Too Short!')
+    // .min(5, 'Too Short!')
     .required('Required'),
   password: Yup.string()
     .trim('Password cannot include spaces')
-    .min(5, 'Too Short!')
+    // .min(5, 'Too Short!')
     .required('Required'),
   confirm: Yup.string().oneOf([Yup.ref('password')], 'Passwords must match'),
 });
